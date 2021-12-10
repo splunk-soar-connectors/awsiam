@@ -16,6 +16,7 @@
     "python_version": "3",
     "main_module": "awsiam_connector.py",
     "min_phantom_version": "4.9.39220",
+    "fips_compliant": true,
     "latest_tested_versions": [
         "Cloud, August 12, 2021"
     ],

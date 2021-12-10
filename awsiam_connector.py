@@ -12,30 +12,31 @@
 # the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 # either express or implied. See the License for the specific language governing permissions
 # and limitations under the License.
-import json
-import hmac
-import hashlib
-import datetime
+import ast
 import collections
+import datetime
+import hashlib
+import hmac
+import json
 import sys
 from collections import OrderedDict
+
 import requests
 import xmltodict
-from bs4 import BeautifulSoup
-from bs4 import UnicodeDammit
-from awsiam_consts import *
-import ast
 from boto3 import Session
+from bs4 import BeautifulSoup, UnicodeDammit
+
+from awsiam_consts import *
 
 try:
-    from urllib import urlencode, unquote
+    from urllib import unquote, urlencode
 except ImportError:
-    from urllib.parse import urlencode, unquote
+    from urllib.parse import unquote, urlencode
 
 # Phantom App imports
 import phantom.app as phantom
-from phantom.base_connector import BaseConnector
 from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
 
 
 class RetVal(tuple):
@@ -1530,8 +1531,9 @@ class AwsIamConnector(BaseConnector):
 
 if __name__ == '__main__':
 
-    import pudb
     import argparse
+
+    import pudb
 
     pudb.set_trace()
 
