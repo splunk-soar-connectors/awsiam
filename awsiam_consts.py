@@ -176,7 +176,8 @@ AWSIAM_ACTION_FAILED_MESSAGE = 'Action {action_name} failed'
 AWSIAM_TIMEOUT = 30
 AWSIAM_UNKNOWN_ERROR_MSG = "Unknown error occurred. Please check the asset configuration and|or action parameters"
 AWSIAM_UNKNOWN_ERROR_CODE = "Error code unavailable"
-AWSIAM_TYPE_ERROR_MSG = "Error occurred while connecting to the AWS IAM server. Please check the asset configuration and|or the action parameters"
+AWSIAM_TYPE_ERROR_MSG = "Error occurred while connecting to the AWS IAM server. Please check the asset configuration " \
+                        "and|or the action parameters"
 AWSIAM_ERR_EC2_ROLE_CREDENTIALS_FAILED = "Failed to get EC2 role credentials"
 AWSIAM_ERR_TEMP_CREDENTIALS_FAILED = "Failed to get temporary credentials: {err}"
 AWSIAM_ERR_BAD_ASSET_CONFIG = 'Please provide access keys or select assume role check box in asset configuration'

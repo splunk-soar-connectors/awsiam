@@ -290,7 +290,8 @@ class AwsIamConnector(BaseConnector):
         :param service_name: Service name whose requests are called
         return: Signature key generated using AWS Signature Version 4
         """
-        k_date = self._aws_sign(self._handle_py_ver_compat_for_input_str('{}{}'.format(AWSIAM_SIGNATURE_V4, self._secret_key), always_encode=True), date_stamp)
+        k_date = self._aws_sign(self._handle_py_ver_compat_for_input_str('{}{}'.format(AWSIAM_SIGNATURE_V4, self._secret_key),
+                                                                         always_encode=True), date_stamp)
         k_region = self._aws_sign(k_date, region_name)
         k_service = self._aws_sign(k_region, service_name)
         k_signing = self._aws_sign(k_service, AWSIAM_SIGNATURE_V4_REQUEST)
@@ -326,14 +327,16 @@ class AwsIamConnector(BaseConnector):
         # Match the algorithm to the hashing algorithm, either SHA-1 or SHA-256 (recommended)
         credential_scope = '{}/{}/{}/{}'.format(datestamp, AWSIAM_REGION, AWSIAM_SERVICE, AWSIAM_SIGNATURE_V4_REQUEST)
         string_to_sign = '{}\n{}\n{}\n{}'.format(AWSIAM_REQUESTS_SIGNING_ALGO, amzdate, credential_scope,
-                                                 hashlib.sha256(self._handle_py_ver_compat_for_input_str(canonical_request, always_encode=True)).hexdigest())
+                                                 hashlib.sha256(self._handle_py_ver_compat_for_input_str(
+                                                     canonical_request, always_encode=True)).hexdigest())
 
         # 3. Calculate the signature
         # a) Create the signing key using the function defined above.
         signing_key = self._get_signature_key(datestamp, AWSIAM_REGION, AWSIAM_SERVICE)
 
         # b) Sign the string_to_sign using the signing_key
-        signature = hmac.new(signing_key, self._handle_py_ver_compat_for_input_str(string_to_sign, always_encode=True), hashlib.sha256).hexdigest()
+        signature = hmac.new(signing_key, self._handle_py_ver_compat_for_input_str(string_to_sign, always_encode=True),
+                             hashlib.sha256).hexdigest()
 
         authorization_header = '{} Credential={}/{}, SignedHeaders={}, Signature={}'.\
             format(AWSIAM_REQUESTS_SIGNING_ALGO, self._access_key, credential_scope, AWSIAM_SIGNED_HEADERS, signature)
@@ -396,7 +399,8 @@ class AwsIamConnector(BaseConnector):
         params = dict()
         config = self.get_config()
 
-        # Need to use different testing endpoint when using non-user credentials (assume role checkbox), since there is no user associated with the credentials
+        # Need to use different testing endpoint when using non-user credentials (assume role checkbox),
+        # since there is no user associated with the credentials
         if config.get('use_role'):
             params[AWSIAM_JSON_ACTION] = AWSIAM_LIST_ROLES_ENDPOINT
         else:
@@ -1407,7 +1411,8 @@ class AwsIamConnector(BaseConnector):
                     list_items.extend(items)
 
             if is_pagination_required:
-                params[AWSIAM_JSON_MARKER] = self._handle_py_ver_compat_for_input_str(response[json_resp_part_0][json_resp_part_1][AWSIAM_JSON_MARKER])
+                params[AWSIAM_JSON_MARKER] = self._handle_py_ver_compat_for_input_str(
+                    response[json_resp_part_0][json_resp_part_1][AWSIAM_JSON_MARKER])
             else:
                 break
 
