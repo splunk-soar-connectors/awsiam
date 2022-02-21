@@ -2,7 +2,7 @@
 # AWS IAM
 
 Publisher: Splunk  
-Connector Version: 2\.1\.5  
+Connector Version: 2\.1\.6  
 Product Vendor: AWS  
 Product Name: AWS Identity Access Management  
 Product Version Supported (regex): "\.\*"  
