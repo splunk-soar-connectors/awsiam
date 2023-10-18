@@ -13,7 +13,7 @@
 # either express or implied. See the License for the specific language governing permissions
 # and limitations under the License.
 AWSIAM_ACCESS_KEY = 'access_key'
-AWSIAM_SECRET_KEY = 'secret_key'
+AWSIAM_SECRET_KEY = 'secret_key'  # pragma: allowlist secret
 AWSIAM_SERVICE = 'iam'
 AWSIAM_HOST = 'iam.amazonaws.com'
 AWSIAM_SERVER_URL = 'https://iam.amazonaws.com'
@@ -53,7 +53,7 @@ AWSIAM_GET_ROLE_INSTANCE_PROFILE_ENDPOINT = 'GetInstanceProfile'
 AWSIAM_DELETE_INSTANCE_PROFILE_ENDPOINT = 'DeleteInstanceProfile'
 AWSIAM_LIST_GROUPS_ENDPOINT = 'ListGroups'
 AWSIAM_PARAM_USERNAME = 'username'
-AWSIAM_PARAM_PASSWORD = 'password'
+AWSIAM_PARAM_PASSWORD = 'password'  # pragma: allowlist secret
 AWSIAM_PARAM_GROUP_NAME = 'group_name'
 AWSIAM_PARAM_ROLE_NAME = 'role_name'
 AWSIAM_PARAM_ROLE_POLICY_DOC = 'role_policy_document'
@@ -74,7 +74,7 @@ AWSIAM_JSON_VERSION = 'Version'
 AWSIAM_JSON_STATUS = 'Status'
 AWSIAM_JSON_MEMBER = 'member'
 AWSIAM_JSON_USERNAME = 'UserName'
-AWSIAM_JSON_PASSWORD = 'Password'
+AWSIAM_JSON_PASSWORD = 'Password'  # pragma: allowlist secret
 AWSIAM_JSON_INACTIVE = 'Inactive'
 AWSIAM_JSON_ACTIVE = 'Active'
 AWSIAM_JSON_GROUPS = 'Groups'

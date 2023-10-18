@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "98d44859-f9dd-46e2-9f17-2169fb71c934",
+		"_postman_id": "e7c52b0d-58e2-41b6-844a-cea2ee2c3ae1",
 		"name": "AWS IAM",
 		"description": "**COLLECTION OF ENDPOINTS CONTACTED BY AWS IAM SPLUNK SOAR APP**\n\n**Authorization**\n\nThis app depends on aws signature authorization. It requires the following information\n\n*   Access Key\n*   Secret Key\n*   Region\n*   Service",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30589276"
 	},
 	"item": [
 		{
@@ -555,8 +556,7 @@
 							"    header: {",
 							"        'Content-Type': 'text/xml; charset=utf-8',",
 							"        'Accept': '*/*',",
-							"        'x-amz-date': '20220217T074244Z',",
-							"        'Authorization': 'AWS4-HMAC-SHA256 Credential=AKIAI3QMVMHTUIBXXUMQ/20220217/us-east-1/iam/aws4_request, SignedHeaders=host;x-amz-date, Signature=77d2ca8e21e8aa4eeb9279c4805e4fe8b03f65875a8b619773a67ac664f95429'",
+							"        'x-amz-date': '20220217T074244Z'",
 							"    }",
 							"}",
 							"pm.sendRequest(req, function (err, response) {",
