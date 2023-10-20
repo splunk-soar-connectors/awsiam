@@ -93,7 +93,7 @@ AWSIAM_JSON_LOGIN_PROFILE = 'LoginProfile'
 AWSIAM_JSON_ERROR = 'Error'
 AWSIAM_JSON_ERROR_TYPE = 'Type'
 AWSIAM_JSON_ERROR_CODE = 'Code'
-AWSIAM_JSON_ERROR_MESSAGE = 'Message'
+AWSIAM_JSON_ERROR_MSG = 'Message'
 AWSIAM_JSON_ERROR_RESPONSE = 'ErrorResponse'
 AWSIAM_JSON_ROLE = 'Role'
 AWSIAM_JSON_ATTACHED = 'attached'
@@ -172,12 +172,12 @@ AWSIAM_ROLE_AND_PROFILE_ALREADY_EXISTS_MSG = 'Both role as well as instance prof
 AWSIAM_POLICY_DOC_TRIMMING_ERROR_MSG = 'Error occurred while trimming role policy document for removal of unwanted ' \
                                        'spaces. Please provide a valid json string in policy document.'
 AWSIAM_ROLE_DOES_NOT_EXIST_MSG = 'Role {role_name} does not exist. Hence, policy can not be {policy_status}.'
-AWSIAM_ACTION_FAILED_MESSAGE = 'Action {action_name} failed'
+AWSIAM_ACTION_FAILED_MSG = 'Action {action_name} failed'
 AWSIAM_TIMEOUT = 30
 AWSIAM_UNKNOWN_ERROR_MSG = "Unknown error occurred. Please check the asset configuration and|or action parameters"
 AWSIAM_UNKNOWN_ERROR_CODE = "Error code unavailable"
 AWSIAM_TYPE_ERROR_MSG = "Error occurred while connecting to the AWS IAM server. Please check the asset configuration " \
                         "and|or the action parameters"
-AWSIAM_ERR_EC2_ROLE_CREDENTIALS_FAILED = "Failed to get EC2 role credentials"
-AWSIAM_ERR_TEMP_CREDENTIALS_FAILED = "Failed to get temporary credentials: {err}"
-AWSIAM_ERR_BAD_ASSET_CONFIG = 'Please provide access keys or select assume role check box in asset configuration'
+AWSIAM_ERROR_EC2_ROLE_CREDENTIALS_FAILED = "Failed to get EC2 role credentials"
+AWSIAM_ERROR_TEMP_CREDENTIALS_FAILED = "Failed to get temporary credentials: {err}"
+AWSIAM_ERROR_BAD_ASSET_CONFIG = 'Please provide access keys or select assume role check box in asset configuration'

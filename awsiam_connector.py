@@ -78,7 +78,7 @@ class AwsIamConnector(BaseConnector):
                 self.save_progress("Using temporary assume role credentials for action")
             except Exception as e:
                 err = self._get_error_message_from_exception(e)
-                return action_result.set_status(phantom.APP_ERROR, AWSIAM_ERR_TEMP_CREDENTIALS_FAILED.format(err=err))
+                return action_result.set_status(phantom.APP_ERROR, AWSIAM_ERROR_TEMP_CREDENTIALS_FAILED.format(err=err))
 
         return phantom.APP_SUCCESS
 
@@ -160,7 +160,7 @@ class AwsIamConnector(BaseConnector):
         # At this point, it is the error response
         error_type = text[AWSIAM_JSON_ERROR_RESPONSE][AWSIAM_JSON_ERROR][AWSIAM_JSON_ERROR_TYPE]
         error_code = text[AWSIAM_JSON_ERROR_RESPONSE][AWSIAM_JSON_ERROR][AWSIAM_JSON_ERROR_CODE]
-        error_message = text[AWSIAM_JSON_ERROR_RESPONSE][AWSIAM_JSON_ERROR][AWSIAM_JSON_ERROR_MESSAGE]
+        error_message = text[AWSIAM_JSON_ERROR_RESPONSE][AWSIAM_JSON_ERROR][AWSIAM_JSON_ERROR_MSG]
 
         error = 'ErrorType: {}\nErrorCode: {}\nErrorMessage: {}'.\
             format(error_type, error_code, self._handle_py_ver_compat_for_input_str(error_message))
@@ -785,7 +785,7 @@ class AwsIamConnector(BaseConnector):
             ret_val, response = self._make_rest_call(action_result=action_result, params=params)
 
             if phantom.is_fail(ret_val):
-                self.save_progress(AWSIAM_ACTION_FAILED_MESSAGE.format(action_name=self.get_action_identifier()))
+                self.save_progress(AWSIAM_ACTION_FAILED_MSG.format(action_name=self.get_action_identifier()))
                 return action_result.get_status()
 
         # 2. Delete all attached policies with the role
@@ -1104,7 +1104,8 @@ class AwsIamConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_DELETED_MSG.format(username=username))
 
     def _handle_remove_user(self, param):
-        """ This function is used to remove user from the specified group.
+        """
+        This function is used to remove user from the specified group.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -1138,7 +1139,8 @@ class AwsIamConnector(BaseConnector):
                                         format(username=username, group_name=group_name))
 
     def _handle_add_user(self, param):
-        """ This function is used to add user to the specified group.
+        """
+        This function is used to add user to the specified group.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -1505,7 +1507,7 @@ class AwsIamConnector(BaseConnector):
         if config.get('use_role'):
             credentials = self._handle_get_ec2_role()
             if not credentials:
-                return self.set_status(phantom.APP_ERROR, AWSIAM_ERR_EC2_ROLE_CREDENTIALS_FAILED)
+                return self.set_status(phantom.APP_ERROR, AWSIAM_ERROR_EC2_ROLE_CREDENTIALS_FAILED)
             self._access_key = credentials.access_key
             self._secret_key = credentials.secret_key
             self._session_token = credentials.token
@@ -1516,7 +1518,7 @@ class AwsIamConnector(BaseConnector):
         self._response_metadata_dict = self._get_response_metadata_dict()
 
         if not (self._access_key and self._secret_key):
-            return self.set_status(phantom.APP_ERROR, AWSIAM_ERR_BAD_ASSET_CONFIG)
+            return self.set_status(phantom.APP_ERROR, AWSIAM_ERROR_BAD_ASSET_CONFIG)
 
         return phantom.APP_SUCCESS
 
