@@ -78,7 +78,9 @@ class AwsIamConnector(BaseConnector):
                 self.save_progress("Using temporary assume role credentials for action")
             except Exception as e:
                 err = self._get_error_message_from_exception(e)
-                return action_result.set_status(phantom.APP_ERROR, AWSIAM_ERROR_TEMP_CREDENTIALS_FAILED.format(err=err))
+                err_msg = AWSIAM_ERROR_TEMP_CREDENTIALS_FAILED.format(err=err)
+                self.debug_print(err_msg)
+                return action_result.set_status(phantom.APP_ERROR, err_msg)
 
         return phantom.APP_SUCCESS
 
@@ -92,8 +94,8 @@ class AwsIamConnector(BaseConnector):
         try:
             if input_str is not None and (self._python_version == 2 or always_encode):
                 input_str = UnicodeDammit(input_str).unicode_markup.encode('utf-8')
-        except:
-            self.debug_print("Error occurred while handling python 2to3 compatibility for the input string")
+        except Exception as ex:
+            self.debug_print(f"Error occurred while handling python 2to3 compatibility for the input string: {ex}")
 
         return input_str
 
@@ -1501,8 +1503,10 @@ class AwsIamConnector(BaseConnector):
         # Fetching the Python major version
         try:
             self._python_version = int(sys.version_info[0])
-        except:
-            return self.set_status(phantom.APP_ERROR, "Error occurred while getting the Phantom server's Python major version")
+        except Exception as ex:
+            err_msg = f"Error occurred while getting the Phantom server's Python major version: {ex}"
+            self.debug_print(err_msg)
+            return self.set_status(phantom.APP_ERROR, err_msg)
 
         if config.get('use_role'):
             credentials = self._handle_get_ec2_role()
