@@ -489,6 +489,7 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response_dict)
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_DISABLED_MSG.format(username=username))
 
     def _handle_enable_user(self, param):
@@ -566,6 +567,7 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response_dict)
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_ENABLED_MSG.format(username=username))
 
     def _handle_assign_policy(self, param):
@@ -599,6 +601,7 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_ATTACH_USER_POLICY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_ATTACH_USER_POLICY_MSG.
                                         format(policy_arn=policy_arn, username=username))
 
@@ -633,6 +636,7 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_DETACH_USER_POLICY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_DETACH_USER_POLICY_MSG.
                                         format(policy_arn=policy_arn, username=username))
 
@@ -677,6 +681,7 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_DETACH_ROLE_POLICY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_DETACH_ROLE_POLICY_MSG.
                                         format(policy_arn=policy_arn, role_name=role_name))
 
@@ -721,6 +726,7 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_ATTACH_ROLE_POLICY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_ATTACH_ROLE_POLICY_MSG.
                                         format(policy_arn=policy_arn, role_name=role_name))
 
@@ -829,6 +835,7 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_DELETE_ROLE_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_ROLE_DELETED_MSG.format(role_name=role_name))
 
     def _if_role_exist(self, action_result, role_name):
@@ -978,6 +985,7 @@ class AwsIamConnector(BaseConnector):
         response_dict.update(response[AWSIAM_JSON_ADD_ROLE_INSTANCE_PROFILE_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
         action_result.add_data(response_dict)
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_ADD_ROLE_MSG.format(role_name=role_name))
 
     def _handle_delete_user(self, param):
@@ -1103,6 +1111,7 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_DELETE_USER_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_DELETED_MSG.format(username=username))
 
     def _handle_remove_user(self, param):
@@ -1137,6 +1146,7 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_REMOVE_USER_FROM_GROUP_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_REMOVED_FROM_GROUP_MSG.
                                         format(username=username, group_name=group_name))
 
@@ -1172,6 +1182,7 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_ADD_USER_TO_GROUP_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_ADDED_TO_GROUP_MSG.
                                         format(username=username, group_name=group_name))
 
@@ -1236,6 +1247,7 @@ class AwsIamConnector(BaseConnector):
         summary['total_groups'] = no_of_groups
         summary['total_policies'] = no_of_policies
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_list_groups(self, param):
@@ -1274,6 +1286,7 @@ class AwsIamConnector(BaseConnector):
         summary = action_result.update_summary({})
         summary['total_groups'] = action_result.get_data_size()
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_list_users(self, param):
@@ -1332,6 +1345,7 @@ class AwsIamConnector(BaseConnector):
         summary = action_result.update_summary({})
         summary['total_users'] = action_result.get_data_size()
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_list_roles(self, param):
@@ -1367,6 +1381,7 @@ class AwsIamConnector(BaseConnector):
         summary = action_result.update_summary({})
         summary['total_roles'] = action_result.get_data_size()
 
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_list_items(self, action_result=None, params=None, key=None):
