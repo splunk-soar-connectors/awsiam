@@ -80,7 +80,7 @@ action_result.summary.total_policies | numeric |  |   2
 action_result.message | string |  |   Total policies: 2, Total groups: 2 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'list groups'
 List groups of AWS IAM
@@ -111,7 +111,7 @@ action_result.summary.total_groups | numeric |  |   4
 action_result.message | string |  |   Total groups: 4 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'list users'
 List users of AWS IAM
@@ -145,7 +145,7 @@ action_result.summary.total_users | numeric |  |   10
 action_result.message | string |  |   Total users: 10 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'list roles'
 List roles available in AWS IAM
@@ -175,7 +175,7 @@ action_result.summary.total_roles | numeric |  |   11
 action_result.message | string |  |   Total roles: 11 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'add user'
 Add user to a group
@@ -201,7 +201,7 @@ action_result.summary | string |  |
 action_result.message | string |  |   User testUser successfully added to the group Test-Group 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'remove user'
 Remove user from a group
@@ -227,7 +227,7 @@ action_result.summary | string |  |
 action_result.message | string |  |   User testUser successfully removed from the group Test-Group 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'delete user'
 Delete user from AWS IAM account
@@ -253,7 +253,7 @@ action_result.summary | string |  |
 action_result.message | string |  |   User testUser deleted successfully along with all its associations with login profile, access keys, groups, and policies 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'disable user'
 Disable login profile and access keys of a user
@@ -281,7 +281,7 @@ action_result.summary | string |  |
 action_result.message | string |  |   User testUser disabled successfully 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'enable user'
 Enable login profile and access keys of a user
@@ -314,7 +314,7 @@ action_result.summary | string |  |
 action_result.message | string |  |   User testUser enabled successfully 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'add role'
 Add new role in AWS IAM account
@@ -350,7 +350,7 @@ action_result.summary | string |  |
 action_result.message | string |  |   Role testRole successfully added in AWS account 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'remove role'
 Remove role from AWS IAM account
@@ -376,7 +376,7 @@ action_result.summary | string |  |
 action_result.message | string |  |   Role test-Role removed successfully along with all its associations with login instance profiles and policies 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'attach policy'
 Attach managed policy to a role
@@ -402,7 +402,7 @@ action_result.summary | string |  |
 action_result.message | string |  |   Policy with ARN arn:aws:iam::123456789012:policy/testPolicy successfully attached with role test-Role 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'detach policy'
 Detach managed policy from a role
@@ -428,7 +428,7 @@ action_result.summary | string |  |
 action_result.message | string |  |   Policy with ARN arn:aws:iam::123456789012:policy/testPolicy successfully detached from role test-Role 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'assign policy'
 Assign managed policy to the user
@@ -454,7 +454,7 @@ action_result.summary | string |  |
 action_result.message | string |  |   Policy with ARN arn:aws:iam::1234567890:policy/testPolicy successfully assigned to user testUser 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'}   
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='}   
 
 ## action: 'remove policy'
 Remove managed policy association with the user
@@ -480,4 +480,4 @@ action_result.summary | string |  |
 action_result.message | string |  |   Policy with ARN arn:aws:iam::123456789012:policy/testPolicy successfully removed from user testUser 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
-action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'REDACTED', 'Expiration': 'REDACTED', 'SecretAccessKey': 'REDACTED', 'SessionToken': 'REDACTED'} 
+action_result.parameter.credentials | string |  `aws credentials`  |   {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='} 
