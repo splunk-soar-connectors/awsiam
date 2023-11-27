@@ -24,7 +24,7 @@ from collections import OrderedDict
 import requests
 import xmltodict
 from boto3 import Session
-from bs4 import BeautifulSoup, UnicodeDammit
+from bs4 import BeautifulSoup
 
 from awsiam_consts import *
 
@@ -95,7 +95,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         try:
-            if isinstance(input_str,str):
+            if isinstance(input_str, str):
                 input_str = input_str.encode('utf-8')
         except Exception as ex:
             self.debug_print(f"Error occurred while encoding string to utf-8: {ex}")
@@ -168,8 +168,8 @@ class AwsIamConnector(BaseConnector):
         error_code = text[AWSIAM_JSON_ERROR_RESPONSE][AWSIAM_JSON_ERROR][AWSIAM_JSON_ERROR_CODE]
         error_message = text[AWSIAM_JSON_ERROR_RESPONSE][AWSIAM_JSON_ERROR][AWSIAM_JSON_ERROR_MSG]
 
-        error = 'ErrorType: {}\nErrorCode: {}\nErrorMessage: {}'.\
-            format(error_type, error_code, error_message)
+        error = f"ErrorType: {error_type}\nErrorCode: {error_code}\nErrorMessage: {error_message}"
+            
         # Process the error returned in the XML
         try:
             message = f"Error from server. Status Code: {response.status_code} Data from server: {error}"
@@ -230,8 +230,8 @@ class AwsIamConnector(BaseConnector):
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
         # You should process the error returned in the json
-        message = "Error from server. Status Code: {0} Data from server: {1}".\
-            format(response.status_code, response.text.replace('{', '{{').replace('}', '}}'))
+        processed = response.text.replace('{', '{{').replace('}', '}}')
+        message = f"Error from server. Status Code: {response.status_code} Data from server: {processed}"
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
@@ -271,8 +271,8 @@ class AwsIamConnector(BaseConnector):
             return self._process_empty_response(response, action_result)
 
         # everything else is actually an error at this point
-        message = "Can't process response from server. Status Code: {0} Data from server: {1}".\
-            format(response.status_code, response.text.replace('{', '{{').replace('}', '}}'))
+        processed = response.text.replace('{', '{{').replace('}', '}}')
+        message = f"Can't process response from server. Status Code: {response.status_code} Data from server: {processed}"
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
@@ -284,7 +284,7 @@ class AwsIamConnector(BaseConnector):
         :return: Cryptographic hash of the actual data combined with the shared secret key
         """
 
-        return hmac.new(key, self._assure_utf(data.encode), hashlib.sha256).digest()
+        return hmac.new(key, self._assure_utf(data), hashlib.sha256).digest()
 
     def _get_signature_key(self, date_stamp, region_name, service_name):
         """ This function is used to get signature key using AWS Signature Version 4.
@@ -320,7 +320,7 @@ class AwsIamConnector(BaseConnector):
 
         # b) Create payload hash (hash of the request body content). For GET
         # requests, the payload is an empty string ("").
-        payload_hash = hashlib.sha256(self._handle_py_ver_compat_for_input_str("", always_encode=True)).hexdigest()
+        payload_hash = hashlib.sha256(self._assure_utf("")).hexdigest()
 
         # c) Combine elements to create canonical request
         canonical_request = '{}\n/\n{}\n{}\n{}\n{}'.\
@@ -329,7 +329,7 @@ class AwsIamConnector(BaseConnector):
         # 2. Create the string_to_sign
         # Match the algorithm to the hashing algorithm, either SHA-1 or SHA-256 (recommended)
         credential_scope = f"{datestamp}/{AWSIAM_REGION}/{AWSIAM_SERVICE}/{AWSIAM_SIGNATURE_V4_REQUEST}"
-        string_to_sign = f"{AWSIAM_REQUESTS_SIGNING_ALGO}\n{amzdate}\n{credential_scope}\n{hashlib.sha256(self._handle_py_ver_compat_for_input_str(canonical_request, always_encode=True)).hexdigest()}"
+        string_to_sign = f"{AWSIAM_REQUESTS_SIGNING_ALGO}\n{amzdate}\n{credential_scope}\n{hashlib.sha256(self._assure_utf(canonical_request)).hexdigest()}"
 
 
         # 3. Calculate the signature
@@ -340,7 +340,7 @@ class AwsIamConnector(BaseConnector):
         signature = hmac.new(signing_key, self._assure_utf(string_to_sign),
                              hashlib.sha256).hexdigest()
 
-        authorization_header = "{AWSIAM_REQUESTS_SIGNING_ALGO} Credential={self._access_key}/{credential_scope}, SignedHeaders={AWSIAM_SIGNED_HEADERS}, Signature={signature}"
+        authorization_header = f"{AWSIAM_REQUESTS_SIGNING_ALGO} Credential={self._access_key}/{credential_scope}, SignedHeaders={AWSIAM_SIGNED_HEADERS}, Signature={signature}"
 
         headers = dict()
         headers[AWSIAM_JSON_AMZ_DATE] = amzdate
