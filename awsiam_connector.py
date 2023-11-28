@@ -93,12 +93,8 @@ class AwsIamConnector(BaseConnector):
         :param input_str: Input string to be processed
         :return: input_str (Processed input string based on following logic 'input_str - Python 3; encoded input_str - Python 2')
         """
-
-        try:
-            if isinstance(input_str, str):
-                input_str = input_str.encode('utf-8')
-        except Exception as ex:
-            self.debug_print(f'Error occurred while encoding string to utf-8: {ex}')
+        if isinstance(input_str, str):
+            input_str = input_str.encode('utf-8')
         if not isinstance(input_str, bytes):
             self.debug_print('assure utf has to get bytes or string as an input')
         return input_str
@@ -284,7 +280,7 @@ class AwsIamConnector(BaseConnector):
         :return: Cryptographic hash of the actual data combined with the shared secret key
         """
 
-        return hmac.new(key, self._assure_utf(data), hashlib.sha256).digest()
+        return hmac.new(self._assure_utf(key), self._assure_utf(data), hashlib.sha256).digest()
 
     def _get_signature_key(self, date_stamp, region_name, service_name):
         """ This function is used to get signature key using AWS Signature Version 4.
@@ -294,7 +290,7 @@ class AwsIamConnector(BaseConnector):
         :param service_name: Service name whose requests are called
         return: Signature key generated using AWS Signature Version 4
         """
-        k_date = self._aws_sign(self._assure_utf(f'{AWSIAM_SIGNATURE_V4}{self._secret_key}'), date_stamp)
+        k_date = self._aws_sign(f'{AWSIAM_SIGNATURE_V4}{self._secret_key}', date_stamp)
         k_region = self._aws_sign(k_date, region_name)
         k_service = self._aws_sign(k_region, service_name)
         k_signing = self._aws_sign(k_service, AWSIAM_SIGNATURE_V4_REQUEST)
@@ -329,7 +325,7 @@ class AwsIamConnector(BaseConnector):
         # 2. Create the string_to_sign
         # Match the algorithm to the hashing algorithm, either SHA-1 or SHA-256 (recommended)
         credential_scope = f'{datestamp}/{AWSIAM_REGION}/{AWSIAM_SERVICE}/{AWSIAM_SIGNATURE_V4_REQUEST}'
-        string_to_sign = f'{AWSIAM_REQUESTS_SIGNING_ALGO}\n{amzdate}\n{credential_scope}\n',\
+        string_to_sign = f'{AWSIAM_REQUESTS_SIGNING_ALGO}\n{amzdate}\n{credential_scope}\n'\
                         f'{hashlib.sha256(self._assure_utf(canonical_request)).hexdigest()}'
 
         # 3. Calculate the signature
@@ -340,7 +336,7 @@ class AwsIamConnector(BaseConnector):
         signature = hmac.new(signing_key, self._assure_utf(string_to_sign),
                              hashlib.sha256).hexdigest()
 
-        authorization_header = f'{AWSIAM_REQUESTS_SIGNING_ALGO} Credential={self._access_key}/{credential_scope}',\
+        authorization_header = f'{AWSIAM_REQUESTS_SIGNING_ALGO} Credential={self._access_key}/{credential_scope}'\
                                 f', SignedHeaders={AWSIAM_SIGNED_HEADERS}, Signature={signature}'
 
         headers = dict()
