@@ -13,7 +13,7 @@
 # either express or implied. See the License for the specific language governing permissions
 # and limitations under the License.
 AWSIAM_ACCESS_KEY = 'access_key'
-AWSIAM_SECRET_KEY = 'secret_key'
+AWSIAM_SECRET_KEY = 'secret_key'  # pragma: allowlist secret
 AWSIAM_SERVICE = 'iam'
 AWSIAM_HOST = 'iam.amazonaws.com'
 AWSIAM_SERVER_URL = 'https://iam.amazonaws.com'
@@ -53,7 +53,7 @@ AWSIAM_GET_ROLE_INSTANCE_PROFILE_ENDPOINT = 'GetInstanceProfile'
 AWSIAM_DELETE_INSTANCE_PROFILE_ENDPOINT = 'DeleteInstanceProfile'
 AWSIAM_LIST_GROUPS_ENDPOINT = 'ListGroups'
 AWSIAM_PARAM_USERNAME = 'username'
-AWSIAM_PARAM_PASSWORD = 'password'
+AWSIAM_PARAM_PASSWORD = 'password'  # pragma: allowlist secret
 AWSIAM_PARAM_GROUP_NAME = 'group_name'
 AWSIAM_PARAM_ROLE_NAME = 'role_name'
 AWSIAM_PARAM_ROLE_POLICY_DOC = 'role_policy_document'
@@ -74,7 +74,7 @@ AWSIAM_JSON_VERSION = 'Version'
 AWSIAM_JSON_STATUS = 'Status'
 AWSIAM_JSON_MEMBER = 'member'
 AWSIAM_JSON_USERNAME = 'UserName'
-AWSIAM_JSON_PASSWORD = 'Password'
+AWSIAM_JSON_PASSWORD = 'Password'  # pragma: allowlist secret
 AWSIAM_JSON_INACTIVE = 'Inactive'
 AWSIAM_JSON_ACTIVE = 'Active'
 AWSIAM_JSON_GROUPS = 'Groups'
@@ -93,7 +93,7 @@ AWSIAM_JSON_LOGIN_PROFILE = 'LoginProfile'
 AWSIAM_JSON_ERROR = 'Error'
 AWSIAM_JSON_ERROR_TYPE = 'Type'
 AWSIAM_JSON_ERROR_CODE = 'Code'
-AWSIAM_JSON_ERROR_MESSAGE = 'Message'
+AWSIAM_JSON_ERROR_MSG = 'Message'
 AWSIAM_JSON_ERROR_RESPONSE = 'ErrorResponse'
 AWSIAM_JSON_ROLE = 'Role'
 AWSIAM_JSON_ATTACHED = 'attached'
@@ -172,12 +172,12 @@ AWSIAM_ROLE_AND_PROFILE_ALREADY_EXISTS_MSG = 'Both role as well as instance prof
 AWSIAM_POLICY_DOC_TRIMMING_ERROR_MSG = 'Error occurred while trimming role policy document for removal of unwanted ' \
                                        'spaces. Please provide a valid json string in policy document.'
 AWSIAM_ROLE_DOES_NOT_EXIST_MSG = 'Role {role_name} does not exist. Hence, policy can not be {policy_status}.'
-AWSIAM_ACTION_FAILED_MESSAGE = 'Action {action_name} failed'
+AWSIAM_ACTION_FAILED_MSG = 'Action {action_name} failed'
 AWSIAM_TIMEOUT = 30
 AWSIAM_UNKNOWN_ERROR_MSG = "Unknown error occurred. Please check the asset configuration and|or action parameters"
 AWSIAM_UNKNOWN_ERROR_CODE = "Error code unavailable"
 AWSIAM_TYPE_ERROR_MSG = "Error occurred while connecting to the AWS IAM server. Please check the asset configuration " \
                         "and|or the action parameters"
-AWSIAM_ERR_EC2_ROLE_CREDENTIALS_FAILED = "Failed to get EC2 role credentials"
-AWSIAM_ERR_TEMP_CREDENTIALS_FAILED = "Failed to get temporary credentials: {err}"
-AWSIAM_ERR_BAD_ASSET_CONFIG = 'Please provide access keys or select assume role check box in asset configuration'
+AWSIAM_ERROR_EC2_ROLE_CREDENTIALS_FAILED = "Failed to get EC2 role credentials"
+AWSIAM_ERROR_TEMP_CREDENTIALS_FAILED = "Failed to get temporary credentials: {err}"
+AWSIAM_ERROR_BAD_ASSET_CONFIG = 'Please provide access keys or select assume role check box in asset configuration'
