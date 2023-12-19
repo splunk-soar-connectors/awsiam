@@ -6,7 +6,7 @@ Connector Version: 2.1.6
 Product Vendor: AWS  
 Product Name: AWS Identity Access Management  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 5.5.0  
+Minimum Product Version: 6.1.1  
 
 This app integrates with Amazon Web Services Identity Access Management (AWS IAM) to support various containment, corrective and investigate actions
 
