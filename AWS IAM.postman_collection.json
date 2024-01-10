@@ -1,0 +1,928 @@
+{
+	"info": {
+		"_postman_id": "e7c52b0d-58e2-41b6-844a-cea2ee2c3ae1",
+		"name": "AWS IAM",
+		"description": "**COLLECTION OF ENDPOINTS CONTACTED BY AWS IAM SPLUNK SOAR APP**\n\n**Authorization**\n\nThis app depends on aws signature authorization. It requires the following information\n\n*   Access Key\n*   Secret Key\n*   Region\n*   Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30589276"
+	},
+	"item": [
+		{
+			"name": "List Groups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code == 200) {",
+							"    var resp = pm.response.text()",
+							"    var rx = /<GroupName>[\\w*|-]*<\\/GroupName>/gm;",
+							"    var gr_name = resp.match(rx)[0].match(/>[\\w*|-]*</gm)[0];",
+							"    gr_name = gr_name.substring(1, gr_name.length-1)",
+							"    pm.collectionVariables.set(\"group_name\", gr_name)",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=ListGroups&PathPrefix=/&Version={{version}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "ListGroups"
+						},
+						{
+							"key": "PathPrefix",
+							"value": "/"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						}
+					]
+				},
+				"description": "This action provides the list of groups available on the provided path"
+			},
+			"response": []
+		},
+		{
+			"name": "List Roles",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=ListRoles&Version={{version}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "ListRoles"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						}
+					]
+				},
+				"description": "This action provides the list of roles available"
+			},
+			"response": []
+		},
+		{
+			"name": "List Users",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=ListUsers&Version={{version}}&PathPrefix=/",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "ListUsers"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "PathPrefix",
+							"value": "/"
+						}
+					]
+				},
+				"description": "This action provides the list of users available"
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=ListAttachedUserPolicies&Version={{version}}&UserName={{username}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "ListAttachedUserPolicies"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "UserName",
+							"value": "{{username}}"
+						}
+					]
+				},
+				"description": "This action get the information about the user provided\n\n*   Dependent on 'List Users' action"
+			},
+			"response": []
+		},
+		{
+			"name": "Assign Policy",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=AttachUserPolicy&Version={{version}}&UserName={{username}}&PolicyArn={{policy_arn}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "AttachUserPolicy"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "UserName",
+							"value": "{{username}}"
+						},
+						{
+							"key": "PolicyArn",
+							"value": "{{policy_arn}}"
+						}
+					]
+				},
+				"description": "This action Assign a policy to the user\n\n*   Dependent on 'List Users' action"
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Policy",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=DetachUserPolicy&Version={{version}}&UserName={{username}}&PolicyArn={{policy_arn}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "DetachUserPolicy"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "UserName",
+							"value": "{{username}}"
+						},
+						{
+							"key": "PolicyArn",
+							"value": "{{policy_arn}}"
+						}
+					]
+				},
+				"description": "This action removes the policy assigned to an user\n\n*   Dependent on 'List Users' action"
+			},
+			"response": []
+		},
+		{
+			"name": "Add User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=AddUserToGroup&Version={{version}}&UserName={{username}}&GroupName={{group_name}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "AddUserToGroup"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "UserName",
+							"value": "{{username}}"
+						},
+						{
+							"key": "GroupName",
+							"value": "{{group_name}}"
+						}
+					]
+				},
+				"description": "This action adds the user to the provided group\n\n*   Dependent on 'List Users' and 'List Groups' actions"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=DeleteLoginProfile&Version={{version}}&UserName={{delete_user}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "DeleteLoginProfile"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "UserName",
+							"value": "{{delete_user}}"
+						}
+					]
+				},
+				"description": "This action deletes the provided user"
+			},
+			"response": []
+		},
+		{
+			"name": "Remove user",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=RemoveUserFromGroup&Version={{version}}&UserName={{username}}&GroupName={{group_name}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "RemoveUserFromGroup"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "UserName",
+							"value": "{{username}}"
+						},
+						{
+							"key": "GroupName",
+							"value": "{{group_name}}"
+						}
+					]
+				},
+				"description": "This action removes the user from the attached group\n\n*   Dependent on 'List Users' and 'List Groups' actions"
+			},
+			"response": []
+		},
+		{
+			"name": "Enable User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=CreateLoginProfile&Version={{version}}&UserName={{username}}&Password={{password}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "CreateLoginProfile"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "UserName",
+							"value": "{{username}}"
+						},
+						{
+							"key": "Password",
+							"value": "{{password}}"
+						}
+					]
+				},
+				"description": "This action enables the user with provided credential\n\n*   Dependent on 'List Users' actions"
+			},
+			"response": []
+		},
+		{
+			"name": "Disable User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=DeleteLoginProfile&Version={{version}}&UserName={{username}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "DeleteLoginProfile"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "UserName",
+							"value": "{{username}}"
+						}
+					]
+				},
+				"description": "This action disable the provided user"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Instance (add role)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=GetRole&Version={{version}}&RoleName={{role_name}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "GetRole"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "RoleName",
+							"value": "{{role_name}}"
+						}
+					]
+				},
+				"description": "This action create the instance for the provided role_name\n\n*   This is not an independent method, it is sub action for ‘Add Role’ action"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Role (add role)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// console.log(JSON.stringify(pm.request.toJSON(),null,2))",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=CreateRole&Version={{version}}&AssumeRolePolicyDocument={{role_policy_doc}}&Path=/&RoleName={{role_name}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "CreateRole"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "AssumeRolePolicyDocument",
+							"value": "{{role_policy_doc}}"
+						},
+						{
+							"key": "Path",
+							"value": "/"
+						},
+						{
+							"key": "RoleName",
+							"value": "{{role_name}}"
+						}
+					]
+				},
+				"description": "This action create role with the provided policy on given instance\n\n*   This is not an independent method, it is sub action for 'Add Role' action"
+			},
+			"response": []
+		},
+		{
+			"name": "Add Role",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var base_url = pm.collectionVariables.get(\"base_url\")",
+							"var role_policy_doc = pm.collectionVariables.get(\"role_policy_doc\")",
+							"var role_name = pm.collectionVariables.get(\"role_name\")",
+							"var version = pm.collectionVariables.get(\"version\")",
+							"const req = {",
+							"    url: base_url + \"?\" + \"Action=CreateInstanceProfile&Version=\" + version + \"&InstanceProfileName=\"+ role_name+ \"&Path=/\",",
+							"    method: \"get\",",
+							"    header: {",
+							"        'Content-Type': 'text/xml; charset=utf-8',",
+							"        'Accept': '*/*',",
+							"        'x-amz-date': '20220217T074244Z'",
+							"    }",
+							"}",
+							"pm.sendRequest(req, function (err, response) {",
+							"    if (err) throw new Error(JSON.stringify(err))",
+							"    var r = response.text()",
+							"    console.log(r)",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=AddRoleToInstanceProfile&Version={{version}}&InstanceProfileName={{role_name}}&RoleName={{role_name}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "AddRoleToInstanceProfile"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "InstanceProfileName",
+							"value": "{{role_name}}"
+						},
+						{
+							"key": "RoleName",
+							"value": "{{role_name}}"
+						}
+					]
+				},
+				"description": "This action add Role to the instance\n\n*   'Create Instance' and 'Create Role' action needs to run before we execute this action"
+			},
+			"response": []
+		},
+		{
+			"name": "Attach Policy",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=AttachRolePolicy&Version={{version}}&RoleName={{role_name}}&PolicyArn={{policy_arn}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "AttachRolePolicy"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "RoleName",
+							"value": "{{role_name}}"
+						},
+						{
+							"key": "PolicyArn",
+							"value": "{{policy_arn}}"
+						}
+					]
+				},
+				"description": "This action attach the provided policy with the role\n\n*   Depends on 'Add Role' action"
+			},
+			"response": []
+		},
+		{
+			"name": "Detach Policy",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=DetachRolePolicy&Version={{version}}&RoleName={{role_name}}&PolicyArn={{policy_arn}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "DetachRolePolicy"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "RoleName",
+							"value": "{{role_name}}"
+						},
+						{
+							"key": "PolicyArn",
+							"value": "{{policy_arn}}"
+						}
+					]
+				},
+				"description": "This action detach the policy from the role\n\n*   Depends on 'Add Role' action"
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Role",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=DeleteRole&Version={{version}}&RoleName={{role_name}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "DeleteRole"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "RoleName",
+							"value": "{{role_name}}"
+						}
+					]
+				},
+				"description": "This action deletes the provided role\n\n*   'Delete Instance point' and 'Remove Role Instance' needs to run first"
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Role Instance (remove role)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=RemoveRoleFromInstanceProfile&Version={{version}}&RoleName={{role_name}}&InstanceProfileName={{role_name}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "RemoveRoleFromInstanceProfile"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "RoleName",
+							"value": "{{role_name}}"
+						},
+						{
+							"key": "InstanceProfileName",
+							"value": "{{role_name}}"
+						}
+					]
+				},
+				"description": "This action remove the provided role"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Instance point(remove role)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?Action=DeleteInstanceProfile&Version={{version}}&InstanceProfileName={{role_name}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "Action",
+							"value": "DeleteInstanceProfile"
+						},
+						{
+							"key": "Version",
+							"value": "{{version}}"
+						},
+						{
+							"key": "InstanceProfileName",
+							"value": "{{role_name}}"
+						}
+					]
+				},
+				"description": "This action deletes the role instance"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "awsv4",
+		"awsv4": [
+			{
+				"key": "service",
+				"value": "{{service_name}}",
+				"type": "string"
+			},
+			{
+				"key": "region",
+				"value": "{{region}}",
+				"type": "string"
+			},
+			{
+				"key": "secretKey",
+				"value": "{{secret_key}}",
+				"type": "string"
+			},
+			{
+				"key": "accessKey",
+				"value": "{{access_key}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "access_key",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "secret_key",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "region",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "service_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "version",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "username",
+			"value": ""
+		},
+		{
+			"key": "policy_arn",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "group_name",
+			"value": ""
+		},
+		{
+			"key": "enable_user_password",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "role_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "delete_user",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "role_policy_doc",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
