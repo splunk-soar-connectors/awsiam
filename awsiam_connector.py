@@ -68,14 +68,14 @@ class AwsIamConnector(BaseConnector):
 
     def _get_temp_credentials(self, action_result, param=None):
         temp_credentials = dict()
-        if param and 'credentials' in param:
+        if param and "credentials" in param:
             try:
-                temp_credentials = ast.literal_eval(param['credentials'])
-                self._access_key = temp_credentials.get('AccessKeyId', '')
-                self._secret_key = temp_credentials.get('SecretAccessKey', '')
-                self._session_token = temp_credentials.get('SessionToken', '')
+                temp_credentials = ast.literal_eval(param["credentials"])
+                self._access_key = temp_credentials.get("AccessKeyId", "")
+                self._secret_key = temp_credentials.get("SecretAccessKey", "")
+                self._session_token = temp_credentials.get("SessionToken", "")
 
-                self.save_progress('Using temporary assume role credentials for action')
+                self.save_progress("Using temporary assume role credentials for action")
             except Exception as e:
                 err = self._get_error_message_from_exception(e)
                 err_msg = AWSIAM_ERROR_TEMP_CREDENTIALS_FAILED.format(err=err)
@@ -85,7 +85,7 @@ class AwsIamConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def __save_action_handler_progress(self):
-        self.save_progress(f'In action handler for: {self.get_action_identifier()}')
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
     def _assure_utf(self, input_str):
         """
@@ -94,13 +94,13 @@ class AwsIamConnector(BaseConnector):
         :return: input_str (Processed input string based on following logic 'input_str - Python 3; encoded input_str - Python 2')
         """
         if isinstance(input_str, str):
-            input_str = input_str.encode('utf-8')
+            input_str = input_str.encode("utf-8")
         if not isinstance(input_str, bytes):
-            self.debug_print('assure utf has to get bytes or string as an input')
+            self.debug_print("assure utf has to get bytes or string as an input")
         return input_str
 
     def _get_error_message_from_exception(self, e):
-        """ This function is used to get appropriate error message from the exception.
+        """This function is used to get appropriate error message from the exception.
         :param e: Exception object
         :return: error message
         """
@@ -124,10 +124,10 @@ class AwsIamConnector(BaseConnector):
         except:
             error_msg = AWSIAM_UNKNOWN_ERROR_MSG
 
-        return f'Error Code: {error_code}. Error Message: {error_msg}'
+        return f"Error Code: {error_code}. Error Message: {error_msg}"
 
     def _process_empty_response(self, response, action_result):
-        """ This function is used to process empty response.
+        """This function is used to process empty response.
 
         :param response: Response data
         :param action_result: Object of ActionResult
@@ -137,11 +137,11 @@ class AwsIamConnector(BaseConnector):
         if response.status_code == 200:
             return RetVal(phantom.APP_SUCCESS, {})
 
-        error_msg = f'Status code: {response.status_code}. Empty response and no information in the header'
+        error_msg = f"Status code: {response.status_code}. Empty response and no information in the header"
         return RetVal(action_result.set_status(phantom.APP_ERROR, error_msg), None)
 
     def _process_xml_response(self, response, action_result):
-        """ This function is used to process XML response.
+        """This function is used to process XML response.
 
         :param response: Response data
         :param action_result: Object of ActionResult
@@ -150,11 +150,12 @@ class AwsIamConnector(BaseConnector):
 
         # Try a xml parse
         try:
-            text = (xmltodict.parse(response.text))
+            text = xmltodict.parse(response.text)
         except Exception as e:
             return RetVal(
-                action_result.set_status(phantom.APP_ERROR,
-                                         f'Unable to parse XML response. Error: {self._get_error_message_from_exception(e)}'), None)
+                action_result.set_status(phantom.APP_ERROR, f"Unable to parse XML response. Error: {self._get_error_message_from_exception(e)}"),
+                None,
+            )
 
         if 200 <= response.status_code < 399:
             return RetVal(phantom.APP_SUCCESS, text)
@@ -164,18 +165,18 @@ class AwsIamConnector(BaseConnector):
         error_code = text[AWSIAM_JSON_ERROR_RESPONSE][AWSIAM_JSON_ERROR][AWSIAM_JSON_ERROR_CODE]
         error_message = text[AWSIAM_JSON_ERROR_RESPONSE][AWSIAM_JSON_ERROR][AWSIAM_JSON_ERROR_MSG]
 
-        error = f'ErrorType: {error_type}\nErrorCode: {error_code}\nErrorMessage: {error_message}'
+        error = f"ErrorType: {error_type}\nErrorCode: {error_code}\nErrorMessage: {error_message}"
 
         # Process the error returned in the XML
         try:
-            message = f'Error from server. Status Code: {response.status_code} Data from server: {error}'
+            message = f"Error from server. Status Code: {response.status_code} Data from server: {error}"
         except Exception:
-            message = f'Error from server. Status Code: {response.status_code} Data from server: {text}'
+            message = f"Error from server. Status Code: {response.status_code} Data from server: {text}"
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), text)
 
     def _process_html_response(self, response, action_result):
-        """ This function is used to process html response.
+        """This function is used to process html response.
 
         :param response: Response data
         :param action_result: Object of ActionResult
@@ -186,28 +187,28 @@ class AwsIamConnector(BaseConnector):
         status_code = response.status_code
 
         try:
-            soup = BeautifulSoup(response.text, 'html.parser')
+            soup = BeautifulSoup(response.text, "html.parser")
             # Remove the script, style, footer and navigation part from the HTML message
-            for element in soup(['script', 'style', 'footer', 'nav']):
+            for element in soup(["script", "style", "footer", "nav"]):
                 element.extract()
             error_text = soup.text
-            split_lines = error_text.split('\n')
+            split_lines = error_text.split("\n")
             split_lines = [x.strip() for x in split_lines if x.strip()]
-            error_text = '\n'.join(split_lines)
+            error_text = "\n".join(split_lines)
         except:
-            error_text = 'Cannot parse error details'
+            error_text = "Cannot parse error details"
 
-        message = f'Status Code: {status_code}. Data from server:\n{error_text}\n'
+        message = f"Status Code: {status_code}. Data from server:\n{error_text}\n"
 
-        message = message.replace('{', '{{').replace('}', '}}')
+        message = message.replace("{", "{{").replace("}", "}}")
 
         if len(message) > 500:
-            message = 'Error while connecting to a server'
+            message = "Error while connecting to a server"
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_json_response(self, response, action_result):
-        """ This function is used to process json response.
+        """This function is used to process json response.
 
         :param response: Response data
         :param action_result: Object of ActionResult
@@ -218,48 +219,52 @@ class AwsIamConnector(BaseConnector):
         try:
             resp_json = response.json()
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, 'Unable to parse JSON response. Error: {0}'.
-                                                   format(self._get_error_message_from_exception(e))), None)
+            return RetVal(
+                action_result.set_status(
+                    phantom.APP_ERROR, "Unable to parse JSON response. Error: {0}".format(self._get_error_message_from_exception(e))
+                ),
+                None,
+            )
 
         # Please specify the status codes here
         if 200 <= response.status_code < 399:
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
         # You should process the error returned in the json
-        processed = response.text.replace('{', '{{').replace('}', '}}')
-        message = f'Error from server. Status Code: {response.status_code} Data from server: {processed}'
+        processed = response.text.replace("{", "{{").replace("}", "}}")
+        message = f"Error from server. Status Code: {response.status_code} Data from server: {processed}"
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_response(self, response, action_result):
-        """ This function is used to process html response.
+        """This function is used to process html response.
 
-       :param response: Response data
-       :param action_result: Object of ActionResult
-       :return: status phantom.APP_ERROR/phantom.APP_SUCCESS(along with appropriate message)
-       """
+        :param response: Response data
+        :param action_result: Object of ActionResult
+        :return: status phantom.APP_ERROR/phantom.APP_SUCCESS(along with appropriate message)
+        """
 
         # store the r_text in debug data, it will get dumped in the logs if the action fails
-        if hasattr(action_result, 'add_debug_data'):
-            action_result.add_debug_data({'r_status_code': response.status_code})
-            action_result.add_debug_data({'r_text': response.text})
-            action_result.add_debug_data({'r_headers': response.headers})
+        if hasattr(action_result, "add_debug_data"):
+            action_result.add_debug_data({"r_status_code": response.status_code})
+            action_result.add_debug_data({"r_text": response.text})
+            action_result.add_debug_data({"r_headers": response.headers})
 
         # Process each 'Content-Type' of response separately
 
         # Process an xml response
-        if 'xml' in response.headers.get('Content-Type', ''):
+        if "xml" in response.headers.get("Content-Type", ""):
             return self._process_xml_response(response, action_result)
 
         # Process a json response
-        if 'json' in response.headers.get('Content-Type', ''):
+        if "json" in response.headers.get("Content-Type", ""):
             return self._process_json_response(response, action_result)
 
         # Process an HTML response, Do this no matter what the API talks.
         # There is a high chance of a PROXY in between phantom and the rest of
         # world, in case of errors, PROXY's return HTML, this function parses
         # the error and adds it to the action_result.
-        if 'html' in response.headers.get('Content-Type', ''):
+        if "html" in response.headers.get("Content-Type", ""):
             return self._process_html_response(response, action_result)
 
         # it's not content-type that is to be parsed, handle an empty response
@@ -267,13 +272,13 @@ class AwsIamConnector(BaseConnector):
             return self._process_empty_response(response, action_result)
 
         # everything else is actually an error at this point
-        processed = response.text.replace('{', '{{').replace('}', '}}')
+        processed = response.text.replace("{", "{{").replace("}", "}}")
         message = f"Can't process response from server. Status Code: {response.status_code} Data from server: {processed}"
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _aws_sign(self, key, data):
-        """ This function is used to generate cryptographic hash of the provided data.
+        """This function is used to generate cryptographic hash of the provided data.
 
         :param key: Secret key shared between two communicating endpoints
         :param data: Initial message content that needs to be authenticated
@@ -283,61 +288,63 @@ class AwsIamConnector(BaseConnector):
         return hmac.new(self._assure_utf(key), self._assure_utf(data), hashlib.sha256).digest()
 
     def _get_signature_key(self, date_stamp, region_name, service_name):
-        """ This function is used to get signature key using AWS Signature Version 4.
+        """This function is used to get signature key using AWS Signature Version 4.
 
         :param date_stamp: Current date time
         :param region_name: Region name where requests are called
         :param service_name: Service name whose requests are called
         return: Signature key generated using AWS Signature Version 4
         """
-        k_date = self._aws_sign(f'{AWSIAM_SIGNATURE_V4}{self._secret_key}', date_stamp)
+        k_date = self._aws_sign(f"{AWSIAM_SIGNATURE_V4}{self._secret_key}", date_stamp)
         k_region = self._aws_sign(k_date, region_name)
         k_service = self._aws_sign(k_region, service_name)
         k_signing = self._aws_sign(k_service, AWSIAM_SIGNATURE_V4_REQUEST)
         return k_signing
 
     def _get_headers(self, current_time, params):
-        """ This function is used to get headers for requests to be signed using AWS Signature Version 4.
+        """This function is used to get headers for requests to be signed using AWS Signature Version 4.
 
         :param current_time: Current timestamp at time of making request
         :param params: Request URL params
         return: Headers generated by following AWS IAM Signature Version 4 authentication for making request call
         """
 
-        amzdate = current_time.strftime('%Y%m%dT%H%M%SZ')
-        datestamp = current_time.strftime('%Y%m%d')
+        amzdate = current_time.strftime("%Y%m%dT%H%M%SZ")
+        datestamp = current_time.strftime("%Y%m%d")
 
         # 1. Create a canonical request
 
         # a) Create the canonical headers and signed headers. Header names
         # must be trimmed and lowercase, and sorted in code point order from
         # low to high. Note that there is a trailing \n.
-        canonical_headers = f'host:{AWSIAM_HOST}\nx-amz-date:{amzdate}\n'
+        canonical_headers = f"host:{AWSIAM_HOST}\nx-amz-date:{amzdate}\n"
 
         # b) Create payload hash (hash of the request body content). For GET
         # requests, the payload is an empty string ('').
-        payload_hash = hashlib.sha256(self._assure_utf('')).hexdigest()
+        payload_hash = hashlib.sha256(self._assure_utf("")).hexdigest()
 
         # c) Combine elements to create canonical request
-        canonical_request = '{}\n/\n{}\n{}\n{}\n{}'.\
-                            format('GET', params, canonical_headers, AWSIAM_SIGNED_HEADERS, payload_hash)
+        canonical_request = "{}\n/\n{}\n{}\n{}\n{}".format("GET", params, canonical_headers, AWSIAM_SIGNED_HEADERS, payload_hash)
 
         # 2. Create the string_to_sign
         # Match the algorithm to the hashing algorithm, either SHA-1 or SHA-256 (recommended)
-        credential_scope = f'{datestamp}/{AWSIAM_REGION}/{AWSIAM_SERVICE}/{AWSIAM_SIGNATURE_V4_REQUEST}'
-        string_to_sign = f'{AWSIAM_REQUESTS_SIGNING_ALGO}\n{amzdate}\n{credential_scope}\n'\
-                        f'{hashlib.sha256(self._assure_utf(canonical_request)).hexdigest()}'
+        credential_scope = f"{datestamp}/{AWSIAM_REGION}/{AWSIAM_SERVICE}/{AWSIAM_SIGNATURE_V4_REQUEST}"
+        string_to_sign = (
+            f"{AWSIAM_REQUESTS_SIGNING_ALGO}\n{amzdate}\n{credential_scope}\n"
+            f"{hashlib.sha256(self._assure_utf(canonical_request)).hexdigest()}"
+        )
 
         # 3. Calculate the signature
         # a) Create the signing key using the function defined above.
         signing_key = self._get_signature_key(datestamp, AWSIAM_REGION, AWSIAM_SERVICE)
 
         # b) Sign the string_to_sign using the signing_key
-        signature = hmac.new(signing_key, self._assure_utf(string_to_sign),
-                             hashlib.sha256).hexdigest()
+        signature = hmac.new(signing_key, self._assure_utf(string_to_sign), hashlib.sha256).hexdigest()
 
-        authorization_header = f'{AWSIAM_REQUESTS_SIGNING_ALGO} Credential={self._access_key}/{credential_scope}'\
-                                f', SignedHeaders={AWSIAM_SIGNED_HEADERS}, Signature={signature}'
+        authorization_header = (
+            f"{AWSIAM_REQUESTS_SIGNING_ALGO} Credential={self._access_key}/{credential_scope}"
+            f", SignedHeaders={AWSIAM_SIGNED_HEADERS}, Signature={signature}"
+        )
 
         headers = dict()
         headers[AWSIAM_JSON_AMZ_DATE] = amzdate
@@ -348,8 +355,8 @@ class AwsIamConnector(BaseConnector):
             headers[AWSIAM_JSON_STS_TOKEN] = self._session_token
         return headers
 
-    def _make_rest_call(self, action_result, params=None, data=None, method='get', timeout=None):
-        """ This function is used to make the REST call.
+    def _make_rest_call(self, action_result, params=None, data=None, method="get", timeout=None):
+        """This function is used to make the REST call.
 
         :param action_result: Object of ActionResult class
         :param params: Request parameters
@@ -372,21 +379,26 @@ class AwsIamConnector(BaseConnector):
         try:
             request_func = getattr(requests, method)
         except AttributeError:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, f'Invalid method: {method}'), resp_json)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, f"Invalid method: {method}"), resp_json)
 
         try:
-            request_response = request_func(AWSIAM_SERVER_URL, data=data, params=params, timeout=timeout,
-                                            headers=self._get_headers(current_time=datetime.datetime.utcnow(),
-                                                                      params=urlencode(params)))
+            request_response = request_func(
+                AWSIAM_SERVER_URL,
+                data=data,
+                params=params,
+                timeout=timeout,
+                headers=self._get_headers(current_time=datetime.datetime.utcnow(), params=urlencode(params)),
+            )
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR,
-                        f'Error Connecting to server. Details: {self._get_error_message_from_exception(e)}'),
-                        resp_json)
+            return RetVal(
+                action_result.set_status(phantom.APP_ERROR, f"Error Connecting to server. Details: {self._get_error_message_from_exception(e)}"),
+                resp_json,
+            )
 
         return self._process_response(request_response, action_result)
 
     def _handle_test_connectivity(self, param):
-        """ This function is used to handle the test connectivity action.
+        """This function is used to handle the test connectivity action.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -400,7 +412,7 @@ class AwsIamConnector(BaseConnector):
 
         # Need to use different testing endpoint when using non-user credentials (assume role checkbox),
         # since there is no user associated with the credentials
-        if config.get('use_role'):
+        if config.get("use_role"):
             params[AWSIAM_JSON_ACTION] = AWSIAM_LIST_ROLES_ENDPOINT
         else:
             params[AWSIAM_JSON_ACTION] = AWSIAM_TEST_CONNECTIVITY_ENDPOINT
@@ -416,7 +428,7 @@ class AwsIamConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_disable_user(self, param):
-        """ This function is used to disable the login profile and access keys of user.
+        """This function is used to disable the login profile and access keys of user.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -444,8 +456,7 @@ class AwsIamConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             # a) If Login Profile does not exist, then,
             # 404 error is thrown and it needs to be handled for disable user action
-            if not AWSIAM_USER_LOGIN_PROFILE_ALREADY_DELETED_MSG.format(username=username).lower() in \
-                   action_result.get_message().lower():
+            if not AWSIAM_USER_LOGIN_PROFILE_ALREADY_DELETED_MSG.format(username=username).lower() in action_result.get_message().lower():
                 return action_result.get_status()
 
             resp_dict = dict()
@@ -486,11 +497,11 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response_dict)
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_DISABLED_MSG.format(username=username))
 
     def _handle_enable_user(self, param):
-        """ This function is used to enable the login profile and access keys of user.
+        """This function is used to enable the login profile and access keys of user.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -520,8 +531,7 @@ class AwsIamConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             # a) If Login Profile already exist, then,
             # 404 error is thrown and it needs to be handled for enable user action
-            if not AWSIAM_USER_LOGIN_PROFILE_ALREADY_EXISTS_MSG.format(username=username).lower() in \
-                   action_result.get_message().lower():
+            if not AWSIAM_USER_LOGIN_PROFILE_ALREADY_EXISTS_MSG.format(username=username).lower() in action_result.get_message().lower():
                 return action_result.get_status()
 
             resp_dict = dict()
@@ -564,11 +574,11 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response_dict)
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_ENABLED_MSG.format(username=username))
 
     def _handle_assign_policy(self, param):
-        """ This function is used to assign the policy to specified user.
+        """This function is used to assign the policy to specified user.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -598,12 +608,11 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_ATTACH_USER_POLICY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
-        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_ATTACH_USER_POLICY_MSG.
-                                        format(policy_arn=policy_arn, username=username))
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
+        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_ATTACH_USER_POLICY_MSG.format(policy_arn=policy_arn, username=username))
 
     def _handle_remove_policy(self, param):
-        """ This function is used to remove the policy from specified user.
+        """This function is used to remove the policy from specified user.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -633,12 +642,11 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_DETACH_USER_POLICY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
-        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_DETACH_USER_POLICY_MSG.
-                                        format(policy_arn=policy_arn, username=username))
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
+        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_DETACH_USER_POLICY_MSG.format(policy_arn=policy_arn, username=username))
 
     def _handle_detach_policy(self, param):
-        """ This function is used to detach the policy from specified role
+        """This function is used to detach the policy from specified role
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -661,8 +669,9 @@ class AwsIamConnector(BaseConnector):
 
         # Check if the role does not exist, the throw error
         if not role_exist:
-            return action_result.set_status(phantom.APP_ERROR, AWSIAM_ROLE_DOES_NOT_EXIST_MSG.
-                                            format(role_name=role_name, policy_status=AWSIAM_JSON_DETACHED))
+            return action_result.set_status(
+                phantom.APP_ERROR, AWSIAM_ROLE_DOES_NOT_EXIST_MSG.format(role_name=role_name, policy_status=AWSIAM_JSON_DETACHED)
+            )
 
         # 1. Detach Policy from role
         params = OrderedDict()
@@ -678,12 +687,11 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_DETACH_ROLE_POLICY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
-        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_DETACH_ROLE_POLICY_MSG.
-                                        format(policy_arn=policy_arn, role_name=role_name))
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
+        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_DETACH_ROLE_POLICY_MSG.format(policy_arn=policy_arn, role_name=role_name))
 
     def _handle_attach_policy(self, param):
-        """ This function is used to attach the policy to specified role.
+        """This function is used to attach the policy to specified role.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -706,8 +714,9 @@ class AwsIamConnector(BaseConnector):
 
         # Check if the role does not exist, the throw error
         if not role_exist:
-            return action_result.set_status(phantom.APP_ERROR, AWSIAM_ROLE_DOES_NOT_EXIST_MSG.
-                                            format(role_name=role_name, policy_status=AWSIAM_JSON_ATTACHED))
+            return action_result.set_status(
+                phantom.APP_ERROR, AWSIAM_ROLE_DOES_NOT_EXIST_MSG.format(role_name=role_name, policy_status=AWSIAM_JSON_ATTACHED)
+            )
 
         # 1. Attach policy to role
         params = OrderedDict()
@@ -723,12 +732,11 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_ATTACH_ROLE_POLICY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
-        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_ATTACH_ROLE_POLICY_MSG.
-                                        format(policy_arn=policy_arn, role_name=role_name))
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
+        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_ATTACH_ROLE_POLICY_MSG.format(policy_arn=policy_arn, role_name=role_name))
 
     def _handle_remove_role(self, param):
-        """ This function is used to remove the managed role from AWS account.
+        """This function is used to remove the managed role from AWS account.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -750,8 +758,7 @@ class AwsIamConnector(BaseConnector):
 
         # Check if the role already exist with the same name, no need to remove role
         if not role_exist:
-            return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_NO_NEED_TO_REMOVE_ROLE_MSG.
-                                            format(role_name=role_name))
+            return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_NO_NEED_TO_REMOVE_ROLE_MSG.format(role_name=role_name))
 
         # 1. Delete all attached instance profiles with the role
         # a) List all attached instance profiles with the role
@@ -830,11 +837,11 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_DELETE_ROLE_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_ROLE_DELETED_MSG.format(role_name=role_name))
 
     def _if_role_exist(self, action_result, role_name):
-        """ This function is used to check if given role exist in AWS account.
+        """This function is used to check if given role exist in AWS account.
 
         :param action_result: Object of ActionResult class
         :param role_name: AWS IAM role name to verify for its existence in AWS account
@@ -851,8 +858,7 @@ class AwsIamConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             # a) If role does not exist, then,
             # 404 error is thrown and it needs to be handled for the calling action
-            if AWSIAM_ROLE_DOES_NOT_EXISTS_MSG.format(role_name=role_name).lower() in \
-                    action_result.get_message().lower():
+            if AWSIAM_ROLE_DOES_NOT_EXISTS_MSG.format(role_name=role_name).lower() in action_result.get_message().lower():
                 return False
 
             return None
@@ -861,7 +867,7 @@ class AwsIamConnector(BaseConnector):
         return True
 
     def _if_role_instance_profile_exist(self, action_result, role_name):
-        """ This function is used to check if given instance profile exists in AWS account.
+        """This function is used to check if given instance profile exists in AWS account.
 
         :param action_result: Object of ActionResult
         :param role_name: AWS IAM role name to verify for its existence in AWS account
@@ -878,8 +884,10 @@ class AwsIamConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             # a) If instance profile does not exist, then,
             # 404 error is thrown and it needs to be handled for add role action
-            if AWSIAM_ROLE_INSTANCE_PROFILE_DOES_NOT_EXISTS_MSG.format(instance_profile_name=role_name).lower() in \
-                    action_result.get_message().lower():
+            if (
+                AWSIAM_ROLE_INSTANCE_PROFILE_DOES_NOT_EXISTS_MSG.format(instance_profile_name=role_name).lower()
+                in action_result.get_message().lower()
+            ):
                 return False
 
             return None
@@ -888,7 +896,7 @@ class AwsIamConnector(BaseConnector):
         return True
 
     def _handle_add_role(self, param):
-        """ This function is used to add the role to AWS account.
+        """This function is used to add the role to AWS account.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -903,12 +911,12 @@ class AwsIamConnector(BaseConnector):
 
         role_name = param[AWSIAM_PARAM_ROLE_NAME]
         role_policy_doc = param[AWSIAM_PARAM_ROLE_POLICY_DOC]
-        role_path = param.get(AWSIAM_PARAM_ROLE_PATH, '/').replace('\\', '/')
+        role_path = param.get(AWSIAM_PARAM_ROLE_PATH, "/").replace("\\", "/")
 
         # Remove unwanted spaces from json string of role policy document
         try:
             role_policy_doc_dict = json.loads(role_policy_doc)
-            role_policy_doc = json.dumps(role_policy_doc_dict, separators=(',', ':'))
+            role_policy_doc = json.dumps(role_policy_doc_dict, separators=(",", ":"))
         except:
             self.debug_print(AWSIAM_POLICY_DOC_TRIMMING_ERROR_MSG)
             return action_result.set_status(phantom.APP_ERROR, AWSIAM_POLICY_DOC_TRIMMING_ERROR_MSG)
@@ -924,17 +932,14 @@ class AwsIamConnector(BaseConnector):
 
         # Check if the role or role instance profile already exist with the same name, then fail the action
         if role_exist and role_instance_profile_exist:
-            return action_result.set_status(phantom.APP_ERROR, AWSIAM_ROLE_AND_PROFILE_ALREADY_EXISTS_MSG.
-                                            format(role_name=role_name))
+            return action_result.set_status(phantom.APP_ERROR, AWSIAM_ROLE_AND_PROFILE_ALREADY_EXISTS_MSG.format(role_name=role_name))
         elif role_exist:
-            return action_result.set_status(phantom.APP_ERROR, AWSIAM_ROLE_ALREADY_EXISTS_MSG.
-                                            format(role_name=role_name))
+            return action_result.set_status(phantom.APP_ERROR, AWSIAM_ROLE_ALREADY_EXISTS_MSG.format(role_name=role_name))
         elif role_instance_profile_exist:
-            return action_result.set_status(phantom.APP_ERROR, AWSIAM_ROLE_INSTANCE_PROFILE_ALREADY_EXISTS_MSG.
-                                            format(role_name=role_name))
+            return action_result.set_status(phantom.APP_ERROR, AWSIAM_ROLE_INSTANCE_PROFILE_ALREADY_EXISTS_MSG.format(role_name=role_name))
 
         # Check if role_path is given in correct format
-        if not role_path == '/' and (not role_path.startswith('/') or not role_path.endswith('/')):
+        if not role_path == "/" and (not role_path.startswith("/") or not role_path.endswith("/")):
             return action_result.set_status(phantom.APP_ERROR, AWSIAM_INVALID_ROLE_PATH_MSG)
 
         # 1. Add a container instance profile for role creation in AWS IAM account
@@ -980,11 +985,11 @@ class AwsIamConnector(BaseConnector):
         response_dict.update(response[AWSIAM_JSON_ADD_ROLE_INSTANCE_PROFILE_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
         action_result.add_data(response_dict)
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_ADD_ROLE_MSG.format(role_name=role_name))
 
     def _handle_delete_user(self, param):
-        """ This function is used to delete the user and all associations with login profile, polices, roles, groups,
+        """This function is used to delete the user and all associations with login profile, polices, roles, groups,
         and access keys for the same user.
 
         :param param: Dictionary of input parameters
@@ -1011,8 +1016,7 @@ class AwsIamConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             # a) If Login Profile does not exist, then,
             # 404 error is thrown and it needs to be handled for delete user action
-            if not AWSIAM_USER_LOGIN_PROFILE_ALREADY_DELETED_MSG.format(username=username).lower() in \
-                   action_result.get_message().lower():
+            if not AWSIAM_USER_LOGIN_PROFILE_ALREADY_DELETED_MSG.format(username=username).lower() in action_result.get_message().lower():
                 return action_result.get_status()
 
         # 2. Delete all attached policies of user
@@ -1106,7 +1110,7 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_DELETE_USER_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_DELETED_MSG.format(username=username))
 
     def _handle_remove_user(self, param):
@@ -1141,9 +1145,8 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_REMOVE_USER_FROM_GROUP_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
-        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_REMOVED_FROM_GROUP_MSG.
-                                        format(username=username, group_name=group_name))
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
+        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_REMOVED_FROM_GROUP_MSG.format(username=username, group_name=group_name))
 
     def _handle_add_user(self, param):
         """
@@ -1177,12 +1180,11 @@ class AwsIamConnector(BaseConnector):
 
         action_result.add_data(response[AWSIAM_JSON_ADD_USER_TO_GROUP_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
-        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_ADDED_TO_GROUP_MSG.
-                                        format(username=username, group_name=group_name))
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
+        return action_result.set_status(phantom.APP_SUCCESS, AWSIAM_USER_ADDED_TO_GROUP_MSG.format(username=username, group_name=group_name))
 
     def _handle_get_user(self, param):
-        """ This function is used to fetch entire details for user groups and attached policies to the user.
+        """This function is used to fetch entire details for user groups and attached policies to the user.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -1239,20 +1241,20 @@ class AwsIamConnector(BaseConnector):
 
         # Add a dictionary that is made up of the most important values from data into the summary
         summary = action_result.update_summary({})
-        summary['total_groups'] = no_of_groups
-        summary['total_policies'] = no_of_policies
+        summary["total_groups"] = no_of_groups
+        summary["total_policies"] = no_of_policies
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_list_groups(self, param):
-        """ This function is used to fetch groups of an AWS account
+        """This function is used to fetch groups of an AWS account
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
         """
 
-        group_path = param.get(AWSIAM_PARAM_GROUP_PATH, '/')
+        group_path = param.get(AWSIAM_PARAM_GROUP_PATH, "/")
 
         self.__save_action_handler_progress()
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -1261,7 +1263,7 @@ class AwsIamConnector(BaseConnector):
         if not self._get_temp_credentials(action_result, param):
             return action_result.get_status()
 
-        if group_path and not group_path == '/' and (not group_path.startswith('/') or not group_path.endswith('/')):
+        if group_path and not group_path == "/" and (not group_path.startswith("/") or not group_path.endswith("/")):
             return action_result.set_status(phantom.APP_ERROR, AWSIAM_INVALID_GROUP_PATH_MSG)
 
         params = OrderedDict()
@@ -1279,13 +1281,13 @@ class AwsIamConnector(BaseConnector):
             action_result.add_data(group)
 
         summary = action_result.update_summary({})
-        summary['total_groups'] = action_result.get_data_size()
+        summary["total_groups"] = action_result.get_data_size()
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_list_users(self, param):
-        """ This function is used to fetch users of an AWS account based on user_path and group_name.
+        """This function is used to fetch users of an AWS account based on user_path and group_name.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -1301,7 +1303,7 @@ class AwsIamConnector(BaseConnector):
         params = OrderedDict()
         user_path = param.get(AWSIAM_PARAM_USER_PATH)
         if user_path:
-            user_path = user_path.replace('\\', '/')
+            user_path = user_path.replace("\\", "/")
         group_name = param.get(AWSIAM_PARAM_GROUP_NAME)
         endpoint_flag = AWSIAM_JSON_USERS
 
@@ -1314,9 +1316,9 @@ class AwsIamConnector(BaseConnector):
             endpoint_flag = AWSIAM_JSON_GROUP_USERS
         elif not user_path and not group_name:
             params[AWSIAM_JSON_ACTION] = AWSIAM_LIST_USERS_ENDPOINT
-            params[AWSIAM_JSON_USER_PATH_PREFIX] = '/'
+            params[AWSIAM_JSON_USER_PATH_PREFIX] = "/"
 
-        if user_path and not user_path == '/' and (not user_path.startswith('/') or not user_path.endswith('/')):
+        if user_path and not user_path == "/" and (not user_path.startswith("/") or not user_path.endswith("/")):
             return action_result.set_status(phantom.APP_ERROR, AWSIAM_INVALID_USER_PATH_MSG)
 
         # 1. Fetch users of an AWS account
@@ -1338,13 +1340,13 @@ class AwsIamConnector(BaseConnector):
 
         # Add a dictionary that is made up of the most important values from data into the summary
         summary = action_result.update_summary({})
-        summary['total_users'] = action_result.get_data_size()
+        summary["total_users"] = action_result.get_data_size()
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_list_roles(self, param):
-        """ This function is used to fetch roles of an AWS account.
+        """This function is used to fetch roles of an AWS account.
 
         :param param: Dictionary of input parameters
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
@@ -1374,13 +1376,13 @@ class AwsIamConnector(BaseConnector):
 
         # Add a dictionary that is made up of the most important values from data into the summary
         summary = action_result.update_summary({})
-        summary['total_roles'] = action_result.get_data_size()
+        summary["total_roles"] = action_result.get_data_size()
 
-        self.save_progress(f'Action handler for: {self.get_action_identifier()} has been successfully executed.')
+        self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_list_items(self, action_result=None, params=None, key=None):
-        """ This function is used to fetch paginated response list of items based on provided parameters.
+        """This function is used to fetch paginated response list of items based on provided parameters.
 
         :param action_result: Object of ActionResult
         :param params: Dictionary of input parameters
@@ -1406,7 +1408,7 @@ class AwsIamConnector(BaseConnector):
             json_resp_part_2 = (self._response_metadata_dict[key])[2]
 
             pagination_key = response[json_resp_part_0][json_resp_part_1][AWSIAM_JSON_IS_TRUNCATED]
-            if pagination_key == 'true':
+            if pagination_key == "true":
                 is_pagination_required = True
             else:
                 is_pagination_required = False
@@ -1437,31 +1439,31 @@ class AwsIamConnector(BaseConnector):
         return response_dict
 
     def handle_action(self, param):
-        """ This function gets current action identifier and calls member function of its own to handle the action.
+        """This function gets current action identifier and calls member function of its own to handle the action.
 
         :param param: dictionary which contains information about the actions to be executed
         :return: status(success/failure)
         """
 
-        self.debug_print('action_id', self.get_action_identifier())
+        self.debug_print("action_id", self.get_action_identifier())
 
         action_mapping = {
-            'test_connectivity': self._handle_test_connectivity,
-            'get_user': self._handle_get_user,
-            'list_roles': self._handle_list_roles,
-            'list_users': self._handle_list_users,
-            'list_groups': self._handle_list_groups,
-            'add_user': self._handle_add_user,
-            'remove_user': self._handle_remove_user,
-            'delete_user': self._handle_delete_user,
-            'disable_user': self._handle_disable_user,
-            'enable_user': self._handle_enable_user,
-            'add_role': self._handle_add_role,
-            'remove_role': self._handle_remove_role,
-            'attach_policy': self._handle_attach_policy,
-            'detach_policy': self._handle_detach_policy,
-            'assign_policy': self._handle_assign_policy,
-            'remove_policy': self._handle_remove_policy
+            "test_connectivity": self._handle_test_connectivity,
+            "get_user": self._handle_get_user,
+            "list_roles": self._handle_list_roles,
+            "list_users": self._handle_list_users,
+            "list_groups": self._handle_list_groups,
+            "add_user": self._handle_add_user,
+            "remove_user": self._handle_remove_user,
+            "delete_user": self._handle_delete_user,
+            "disable_user": self._handle_disable_user,
+            "enable_user": self._handle_enable_user,
+            "add_role": self._handle_add_role,
+            "remove_role": self._handle_remove_role,
+            "attach_policy": self._handle_attach_policy,
+            "detach_policy": self._handle_detach_policy,
+            "assign_policy": self._handle_assign_policy,
+            "remove_policy": self._handle_remove_policy,
         }
 
         action = self.get_action_identifier()
@@ -1478,30 +1480,40 @@ class AwsIamConnector(BaseConnector):
     def _get_response_metadata_dict():
         response_dict = dict()
 
-        response_dict[AWSIAM_JSON_GROUPS] = [AWSIAM_JSON_LIST_GROUPS_FOR_USER_RESPONSE,
-                                             AWSIAM_JSON_LIST_GROUPS_FOR_USER_RESULT, AWSIAM_JSON_GROUPS]
-        response_dict[AWSIAM_JSON_POLICIES] = [AWSIAM_JSON_LIST_POLICIES_FOR_USER_RESPONSE,
-                                               AWSIAM_JSON_LIST_POLICIES_FOR_USER_RESULT, AWSIAM_JSON_POLICIES]
-        response_dict[AWSIAM_JSON_ROLES] = [AWSIAM_JSON_LIST_ROLES_RESPONSE,
-                                            AWSIAM_JSON_LIST_ROLES_RESULT, AWSIAM_JSON_ROLES]
-        response_dict[AWSIAM_JSON_USERS] = [AWSIAM_JSON_LIST_USERS_RESPONSE,
-                                            AWSIAM_JSON_LIST_USERS_RESULT, AWSIAM_JSON_USERS]
-        response_dict[AWSIAM_JSON_GROUP_USERS] = [AWSIAM_JSON_GET_GROUP_RESPONSE,
-                                                  AWSIAM_JSON_GET_GROUP_RESULT, AWSIAM_JSON_USERS]
-        response_dict[AWSIAM_JSON_ACCESS_KEYS] = [AWSIAM_JSON_LIST_ACCESS_KEYS_RESPONSE,
-                                                  AWSIAM_JSON_LIST_ACCESS_KEYS_RESULT, AWSIAM_JSON_ACCESS_KEYS]
-        response_dict[AWSIAM_JSON_INSTANCE_PROFILES] = [AWSIAM_JSON_LIST_INSTANCE_PROFILES_RESPONSE,
-                                                        AWSIAM_JSON_LIST_INSTANCE_PROFILES_RESULT,
-                                                        AWSIAM_JSON_INSTANCE_PROFILES]
-        response_dict[AWSIAM_JSON_ROLE_POLICIES] = [AWSIAM_JSON_LIST_ROLE_POLICIES_RESPONSE,
-                                                    AWSIAM_JSON_LIST_ROLE_POLICIES_RESULT, AWSIAM_JSON_POLICIES]
-        response_dict[AWSIAM_JSON_PATHS_GROUPS] = [AWSIAM_JSON_LIST_GROUPS_RESPONSE,
-                                                   AWSIAM_JSON_LIST_GROUPS_RESULT, AWSIAM_JSON_GROUPS]
+        response_dict[AWSIAM_JSON_GROUPS] = [
+            AWSIAM_JSON_LIST_GROUPS_FOR_USER_RESPONSE,
+            AWSIAM_JSON_LIST_GROUPS_FOR_USER_RESULT,
+            AWSIAM_JSON_GROUPS,
+        ]
+        response_dict[AWSIAM_JSON_POLICIES] = [
+            AWSIAM_JSON_LIST_POLICIES_FOR_USER_RESPONSE,
+            AWSIAM_JSON_LIST_POLICIES_FOR_USER_RESULT,
+            AWSIAM_JSON_POLICIES,
+        ]
+        response_dict[AWSIAM_JSON_ROLES] = [AWSIAM_JSON_LIST_ROLES_RESPONSE, AWSIAM_JSON_LIST_ROLES_RESULT, AWSIAM_JSON_ROLES]
+        response_dict[AWSIAM_JSON_USERS] = [AWSIAM_JSON_LIST_USERS_RESPONSE, AWSIAM_JSON_LIST_USERS_RESULT, AWSIAM_JSON_USERS]
+        response_dict[AWSIAM_JSON_GROUP_USERS] = [AWSIAM_JSON_GET_GROUP_RESPONSE, AWSIAM_JSON_GET_GROUP_RESULT, AWSIAM_JSON_USERS]
+        response_dict[AWSIAM_JSON_ACCESS_KEYS] = [
+            AWSIAM_JSON_LIST_ACCESS_KEYS_RESPONSE,
+            AWSIAM_JSON_LIST_ACCESS_KEYS_RESULT,
+            AWSIAM_JSON_ACCESS_KEYS,
+        ]
+        response_dict[AWSIAM_JSON_INSTANCE_PROFILES] = [
+            AWSIAM_JSON_LIST_INSTANCE_PROFILES_RESPONSE,
+            AWSIAM_JSON_LIST_INSTANCE_PROFILES_RESULT,
+            AWSIAM_JSON_INSTANCE_PROFILES,
+        ]
+        response_dict[AWSIAM_JSON_ROLE_POLICIES] = [
+            AWSIAM_JSON_LIST_ROLE_POLICIES_RESPONSE,
+            AWSIAM_JSON_LIST_ROLE_POLICIES_RESULT,
+            AWSIAM_JSON_POLICIES,
+        ]
+        response_dict[AWSIAM_JSON_PATHS_GROUPS] = [AWSIAM_JSON_LIST_GROUPS_RESPONSE, AWSIAM_JSON_LIST_GROUPS_RESULT, AWSIAM_JSON_GROUPS]
 
         return response_dict
 
     def initialize(self):
-        """ This is an optional function that can be implemented by the AppConnector derived class. Since the
+        """This is an optional function that can be implemented by the AppConnector derived class. Since the
         configuration dictionary is already validated by the time this function is called, it's a good place to do any
         extra initialization of any internal modules. This function MUST return a value of either phantom.APP_SUCCESS.
         """
@@ -1517,7 +1529,7 @@ class AwsIamConnector(BaseConnector):
             self.debug_print(err_msg)
             return self.set_status(phantom.APP_ERROR, err_msg)
 
-        if config.get('use_role'):
+        if config.get("use_role"):
             credentials = self._handle_get_ec2_role()
             if not credentials:
                 return self.set_status(phantom.APP_ERROR, AWSIAM_ERROR_EC2_ROLE_CREDENTIALS_FAILED)
@@ -1536,7 +1548,7 @@ class AwsIamConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def finalize(self):
-        """ This function gets called once all the param dictionary elements are looped over and no more handle_action
+        """This function gets called once all the param dictionary elements are looped over and no more handle_action
         calls are left to be made. It gives the AppConnector a chance to loop through all the results that were
         accumulated by multiple handle_action function calls and create any summary if required. Another usage is
         cleanup, disconnect from remote devices etc.
@@ -1549,7 +1561,7 @@ class AwsIamConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     import argparse
 
@@ -1559,9 +1571,9 @@ if __name__ == '__main__':
 
     argparser = argparse.ArgumentParser()
 
-    argparser.add_argument('input_test_json', help='Input Test JSON file')
-    argparser.add_argument('-u', '--username', help='username', required=False)
-    argparser.add_argument('-p', '--password', help='password', required=False)
+    argparser.add_argument("input_test_json", help="Input Test JSON file")
+    argparser.add_argument("-u", "--username", help="username", required=False)
+    argparser.add_argument("-p", "--password", help="password", required=False)
 
     args = argparser.parse_args()
     session_id = None
@@ -1573,28 +1585,29 @@ if __name__ == '__main__':
 
         # User specified a username but not a password, so ask
         import getpass
-        password = getpass.getpass('Password: ')
+
+        password = getpass.getpass("Password: ")
 
     if username and password:
         try:
-            print('Accessing the Login page')
-            r = requests.get(BaseConnector._get_phantom_base_url() + 'login', verify=False)
-            csrftoken = r.cookies['csrftoken']
+            print("Accessing the Login page")
+            r = requests.get(BaseConnector._get_phantom_base_url() + "login", verify=False)
+            csrftoken = r.cookies["csrftoken"]
 
             data = dict()
-            data['username'] = username
-            data['password'] = password
-            data['csrfmiddlewaretoken'] = csrftoken
+            data["username"] = username
+            data["password"] = password
+            data["csrfmiddlewaretoken"] = csrftoken
 
             headers = dict()
-            headers['Cookie'] = f'csrftoken={csrftoken}'
-            headers['Referer'] = BaseConnector._get_phantom_base_url() + 'login'
+            headers["Cookie"] = f"csrftoken={csrftoken}"
+            headers["Referer"] = BaseConnector._get_phantom_base_url() + "login"
 
-            print('Logging into Platform to get the session id')
-            r2 = requests.post(BaseConnector._get_phantom_base_url() + 'login', verify=False, data=data, headers=headers)
-            session_id = r2.cookies['sessionid']
+            print("Logging into Platform to get the session id")
+            r2 = requests.post(BaseConnector._get_phantom_base_url() + "login", verify=False, data=data, headers=headers)
+            session_id = r2.cookies["sessionid"]
         except Exception as e:
-            print(f'Unable to get session id from the platform. Error: {e}')
+            print(f"Unable to get session id from the platform. Error: {e}")
             exit(1)
 
     with open(args.input_test_json) as f:
@@ -1606,8 +1619,8 @@ if __name__ == '__main__':
         connector.print_progress_message = True
 
         if session_id is not None:
-            in_json['user_session_token'] = session_id
-            connector._set_csrf_info(csrftoken, headers['Referer'])
+            in_json["user_session_token"] = session_id
+            connector._set_csrf_info(csrftoken, headers["Referer"])
 
         ret_val = connector._handle_action(json.dumps(in_json), None)
         print(json.dumps(json.loads(ret_val), indent=4))
