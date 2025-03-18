@@ -1,6 +1,6 @@
 # File: awsiam_consts.py
 #
-# Copyright (c) 2018-2024 Splunk Inc.
+# Copyright (c) 2018-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -155,24 +155,23 @@ AWSIAM_DETACH_ROLE_POLICY_MSG = "Policy with ARN {policy_arn} successfully detac
 AWSIAM_ATTACH_USER_POLICY_MSG = "Policy with ARN {policy_arn} successfully assigned to user {username}"
 AWSIAM_DETACH_USER_POLICY_MSG = "Policy with ARN {policy_arn} successfully removed from user {username}"
 AWSIAM_USER_DELETED_MSG = (
-    "User {username} deleted successfully along with all its associations with login profile, " "access keys, groups, and policies"
+    "User {username} deleted successfully along with all its associations with login profile, access keys, groups, and policies"
 )
-AWSIAM_ROLE_DELETED_MSG = "Role {role_name} removed successfully along with all its associations with login instance " "profiles and policies"
+AWSIAM_ROLE_DELETED_MSG = "Role {role_name} removed successfully along with all its associations with login instance profiles and policies"
 AWSIAM_USER_LOGIN_PROFILE_ALREADY_DELETED_MSG = "Login profile for user {username} cannot be found"
 AWSIAM_USER_LOGIN_PROFILE_ALREADY_EXISTS_MSG = "Login profile for user {username} already exists"
 AWSIAM_ROLE_DOES_NOT_EXISTS_MSG = "Name {role_name} cannot be found"
 AWSIAM_ROLE_INSTANCE_PROFILE_DOES_NOT_EXISTS_MSG = "Profile {instance_profile_name} cannot be found"
-AWSIAM_ROLE_ALREADY_EXISTS_MSG = "Role {role_name} already exists in AWS IAM account. Please provide a valid and " "distinct role name."
+AWSIAM_ROLE_ALREADY_EXISTS_MSG = "Role {role_name} already exists in AWS IAM account. Please provide a valid and distinct role name."
 AWSIAM_NO_NEED_TO_REMOVE_ROLE_MSG = "Role {role_name} does not exist in AWS IAM account and hence, can not be removed"
 AWSIAM_ROLE_INSTANCE_PROFILE_ALREADY_EXISTS_MSG = (
-    "Error occurred while creation of instance profile with name " "{role_name} because it already exists in AWS IAM account"
+    "Error occurred while creation of instance profile with name {role_name} because it already exists in AWS IAM account"
 )
 AWSIAM_ROLE_AND_PROFILE_ALREADY_EXISTS_MSG = (
-    "Both role as well as instance profile already exist with the given name" " {role_name}. Please provide a valid and distinct role name."
+    "Both role as well as instance profile already exist with the given name {role_name}. Please provide a valid and distinct role name."
 )
 AWSIAM_POLICY_DOC_TRIMMING_ERROR_MSG = (
-    "Error occurred while trimming role policy document for removal of unwanted "
-    "spaces. Please provide a valid json string in policy document."
+    "Error occurred while trimming role policy document for removal of unwanted spaces. Please provide a valid json string in policy document."
 )
 AWSIAM_ROLE_DOES_NOT_EXIST_MSG = "Role {role_name} does not exist. Hence, policy can not be {policy_status}."
 AWSIAM_ACTION_FAILED_MSG = "Action {action_name} failed"
@@ -180,7 +179,7 @@ AWSIAM_TIMEOUT = 30
 AWSIAM_UNKNOWN_ERROR_MSG = "Unknown error occurred. Please check the asset configuration and|or action parameters"
 AWSIAM_UNKNOWN_ERROR_CODE = "Error code unavailable"
 AWSIAM_TYPE_ERROR_MSG = (
-    "Error occurred while connecting to the AWS IAM server. Please check the asset configuration " "and|or the action parameters"
+    "Error occurred while connecting to the AWS IAM server. Please check the asset configuration and|or the action parameters"
 )
 AWSIAM_ERROR_EC2_ROLE_CREDENTIALS_FAILED = "Failed to get EC2 role credentials"
 AWSIAM_ERROR_TEMP_CREDENTIALS_FAILED = "Failed to get temporary credentials: {err}"
