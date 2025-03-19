@@ -1,6 +1,6 @@
 # File: awsiam_connector.py
 #
-# Copyright (c) 2018-2024 Splunk Inc.
+# Copyright (c) 2018-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ from bs4 import BeautifulSoup
 
 from awsiam_consts import *
 
+
 try:
     from urllib import unquote, urlencode
 except ImportError:
@@ -45,11 +46,9 @@ class RetVal(tuple):
 
 
 class AwsIamConnector(BaseConnector):
-
     def __init__(self):
-
         # Call the BaseConnectors init first
-        super(AwsIamConnector, self).__init__()
+        super().__init__()
 
         self._state = None
         self._access_key = None
@@ -221,7 +220,7 @@ class AwsIamConnector(BaseConnector):
         except Exception as e:
             return RetVal(
                 action_result.set_status(
-                    phantom.APP_ERROR, "Unable to parse JSON response. Error: {0}".format(self._get_error_message_from_exception(e))
+                    phantom.APP_ERROR, f"Unable to parse JSON response. Error: {self._get_error_message_from_exception(e)}"
                 ),
                 None,
             )
@@ -330,8 +329,7 @@ class AwsIamConnector(BaseConnector):
         # Match the algorithm to the hashing algorithm, either SHA-1 or SHA-256 (recommended)
         credential_scope = f"{datestamp}/{AWSIAM_REGION}/{AWSIAM_SERVICE}/{AWSIAM_SIGNATURE_V4_REQUEST}"
         string_to_sign = (
-            f"{AWSIAM_REQUESTS_SIGNING_ALGO}\n{amzdate}\n{credential_scope}\n"
-            f"{hashlib.sha256(self._assure_utf(canonical_request)).hexdigest()}"
+            f"{AWSIAM_REQUESTS_SIGNING_ALGO}\n{amzdate}\n{credential_scope}\n{hashlib.sha256(self._assure_utf(canonical_request)).hexdigest()}"
         )
 
         # 3. Calculate the signature
@@ -1562,7 +1560,6 @@ class AwsIamConnector(BaseConnector):
 
 
 if __name__ == "__main__":
-
     import argparse
 
     import pudb
@@ -1582,7 +1579,6 @@ if __name__ == "__main__":
     password = args.password
 
     if username is not None and password is None:
-
         # User specified a username but not a password, so ask
         import getpass
 
