@@ -2145,8 +2145,7 @@
             "versions": "EQ(*)"
         }
     ],
-    "pip39_dependencies": {},
-    "pip_dependencies": {
+    "pip39_dependencies": {
         "wheel": [
             {
                 "module": "boto3",
