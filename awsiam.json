@@ -13,7 +13,7 @@
     "app_version": "2.1.7",
     "utctime_updated": "2022-01-07T21:35:08.000000Z",
     "package_name": "phantom_awsiam",
-    "python_version": "3",
+    "python_version": "3.9, 3.13",
     "main_module": "awsiam_connector.py",
     "min_phantom_version": "6.2.1",
     "fips_compliant": true,
