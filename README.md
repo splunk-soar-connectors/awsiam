@@ -1,9 +1,9 @@
 # AWS IAM
 
-Publisher: Splunk \
-Connector Version: 2.1.7 \
-Product Vendor: AWS \
-Product Name: AWS Identity Access Management \
+Publisher: Splunk <br>
+Connector Version: 2.1.7 <br>
+Product Vendor: AWS <br>
+Product Name: AWS Identity Access Management <br>
 Minimum Product Version: 6.2.1
 
 This app integrates with Amazon Web Services Identity Access Management (AWS IAM) to support various containment, corrective and investigate actions
@@ -20,28 +20,28 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration \
-[get user](#action-get-user) - Get details of all the groups and attached policies for the user \
-[list groups](#action-list-groups) - List groups of AWS IAM \
-[list users](#action-list-users) - List users of AWS IAM \
-[list roles](#action-list-roles) - List roles available in AWS IAM \
-[add user](#action-add-user) - Add user to a group \
-[remove user](#action-remove-user) - Remove user from a group \
-[delete user](#action-delete-user) - Delete user from AWS IAM account \
-[disable user](#action-disable-user) - Disable login profile and access keys of a user \
-[enable user](#action-enable-user) - Enable login profile and access keys of a user \
-[add role](#action-add-role) - Add new role in AWS IAM account \
-[remove role](#action-remove-role) - Remove role from AWS IAM account \
-[attach policy](#action-attach-policy) - Attach managed policy to a role \
-[detach policy](#action-detach-policy) - Detach managed policy from a role \
-[assign policy](#action-assign-policy) - Assign managed policy to the user \
+[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration <br>
+[get user](#action-get-user) - Get details of all the groups and attached policies for the user <br>
+[list groups](#action-list-groups) - List groups of AWS IAM <br>
+[list users](#action-list-users) - List users of AWS IAM <br>
+[list roles](#action-list-roles) - List roles available in AWS IAM <br>
+[add user](#action-add-user) - Add user to a group <br>
+[remove user](#action-remove-user) - Remove user from a group <br>
+[delete user](#action-delete-user) - Delete user from AWS IAM account <br>
+[disable user](#action-disable-user) - Disable login profile and access keys of a user <br>
+[enable user](#action-enable-user) - Enable login profile and access keys of a user <br>
+[add role](#action-add-role) - Add new role in AWS IAM account <br>
+[remove role](#action-remove-role) - Remove role from AWS IAM account <br>
+[attach policy](#action-attach-policy) - Attach managed policy to a role <br>
+[detach policy](#action-detach-policy) - Detach managed policy from a role <br>
+[assign policy](#action-assign-policy) - Assign managed policy to the user <br>
 [remove policy](#action-remove-policy) - Remove managed policy association with the user
 
 ## action: 'test connectivity'
 
 Validate the asset configuration for connectivity using supplied configuration
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -56,7 +56,7 @@ No Output
 
 Get details of all the groups and attached policies for the user
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -92,7 +92,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 List groups of AWS IAM
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 By default groups from path '/' are fetched.
@@ -126,7 +126,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 List users of AWS IAM
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 If both parameters are provided, users belonging to specified group and to specified path are fetched. If only user path or group name is provided, users belonging to specified path or group respectively are fetched. If no parameters are provided, users belonging to default user path '/' are fetched.
@@ -163,7 +163,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 List roles available in AWS IAM
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -196,7 +196,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 Add user to a group
 
-Type: **correct** \
+Type: **correct** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -225,7 +225,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 Remove user from a group
 
-Type: **contain** \
+Type: **contain** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -254,7 +254,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 Delete user from AWS IAM account
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Delete user and user profile as well as all its associations with groups, policies, and access keys from AWS IAM account.
@@ -283,7 +283,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 Disable login profile and access keys of a user
 
-Type: **contain** \
+Type: **contain** <br>
 Read only: **False**
 
 If disable access keys parameter is marked false, only login profile is disabled. By default both are disabled.
@@ -314,7 +314,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 Enable login profile and access keys of a user
 
-Type: **correct** \
+Type: **correct** <br>
 Read only: **False**
 
 If enable access keys parameter is marked false, only login profile is enabled. By default both are enabled. If this action is being executed on an already enabled user then other parameters won't affect the action run. <p class="warn">Please exercise caution when using this action. The password may be kept and logged in clear text.</p>
@@ -350,7 +350,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 Add new role in AWS IAM account
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Creation of role is a 3 step process. First instance profile is created with the provided role name, then role is created with the same name, and finally the created role is attached with the instance profile created earlier. <p class="warn">Please exercise caution when using this action. Special characters are not allowed in parameter role path.</p>
@@ -389,7 +389,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 Remove role from AWS IAM account
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Remove role and role instance profiles along with associations of role with all attached policies.
@@ -418,7 +418,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 Attach managed policy to a role
 
-Type: **correct** \
+Type: **correct** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -447,7 +447,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 Detach managed policy from a role
 
-Type: **contain** \
+Type: **contain** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -476,7 +476,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 Assign managed policy to the user
 
-Type: **correct** \
+Type: **correct** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -505,7 +505,7 @@ action_result.parameter.credentials | string | `aws credentials` | {'AccessKeyId
 
 Remove managed policy association with the user
 
-Type: **contain** \
+Type: **contain** <br>
 Read only: **False**
 
 #### Action Parameters
