@@ -2153,11 +2153,11 @@
             },
             {
                 "module": "botocore",
-                "input_file": "wheels/py3/botocore-1.40.11-py3-none-any.whl"
+                "input_file": "wheels/py3/botocore-1.40.76-py3-none-any.whl"
             },
             {
                 "module": "jmespath",
-                "input_file": "wheels/py3/jmespath-1.0.1-py3-none-any.whl"
+                "input_file": "wheels/py3/jmespath-1.1.0-py3-none-any.whl"
             },
             {
                 "module": "s3transfer",
@@ -2193,11 +2193,11 @@
             },
             {
                 "module": "botocore",
-                "input_file": "wheels/py3/botocore-1.40.11-py3-none-any.whl"
+                "input_file": "wheels/py3/botocore-1.40.76-py3-none-any.whl"
             },
             {
                 "module": "jmespath",
-                "input_file": "wheels/py3/jmespath-1.0.1-py3-none-any.whl"
+                "input_file": "wheels/py3/jmespath-1.1.0-py3-none-any.whl"
             },
             {
                 "module": "s3transfer",
