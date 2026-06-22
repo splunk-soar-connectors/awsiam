@@ -4,7 +4,7 @@ Publisher: Splunk <br>
 Connector Version: 2.1.8 <br>
 Product Vendor: AWS <br>
 Product Name: AWS Identity Access Management <br>
-Minimum Product Version: 6.2.1
+Minimum Product Version: 8.6.0
 
 This app integrates with Amazon Web Services Identity Access Management (AWS IAM) to support various containment, corrective and investigate actions
 
