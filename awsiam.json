@@ -9,7 +9,7 @@
     "product_name": "AWS Identity Access Management",
     "product_version_regex": ".*",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2018-2025 Splunk Inc.",
+    "license": "Copyright (c) 2018-2026 Splunk Inc.",
     "app_version": "2.1.8",
     "utctime_updated": "2026-02-18T21:56:01.901732Z",
     "package_name": "phantom_awsiam",
