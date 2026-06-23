@@ -1,7 +1,7 @@
 # AWS IAM
 
 Publisher: Splunk <br>
-Connector Version: 2.1.8 <br>
+Connector Version: 2.1.9 <br>
 Product Vendor: AWS <br>
 Product Name: AWS Identity Access Management <br>
 Minimum Product Version: 8.6.0
