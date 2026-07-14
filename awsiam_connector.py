@@ -416,7 +416,7 @@ class AwsIamConnector(BaseConnector):
             params[AWSIAM_JSON_ACTION] = AWSIAM_TEST_CONNECTIVITY_ENDPOINT
 
         # make rest call
-        ret_val, response = self._make_rest_call(action_result=action_result, params=params, timeout=AWSIAM_TIMEOUT)
+        ret_val, _response = self._make_rest_call(action_result=action_result, params=params, timeout=AWSIAM_TIMEOUT)
 
         if phantom.is_fail(ret_val):
             self.save_progress(AWSIAM_TEST_CONNECTIVITY_FAILED_MSG)
@@ -851,7 +851,7 @@ class AwsIamConnector(BaseConnector):
         params[AWSIAM_JSON_ROLE_NAME] = role_name
 
         # make rest call
-        ret_val, response = self._make_rest_call(action_result=action_result, params=params)
+        ret_val, _response = self._make_rest_call(action_result=action_result, params=params)
 
         if phantom.is_fail(ret_val):
             # a) If role does not exist, then,
@@ -877,7 +877,7 @@ class AwsIamConnector(BaseConnector):
         params[AWSIAM_JSON_INSTANCE_PROFILE_NAME] = role_name
 
         # make rest call
-        ret_val, response = self._make_rest_call(action_result=action_result, params=params)
+        ret_val, _response = self._make_rest_call(action_result=action_result, params=params)
 
         if phantom.is_fail(ret_val):
             # a) If instance profile does not exist, then,
