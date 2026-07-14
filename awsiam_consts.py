@@ -54,6 +54,7 @@ AWSIAM_DELETE_INSTANCE_PROFILE_ENDPOINT = "DeleteInstanceProfile"
 AWSIAM_LIST_GROUPS_ENDPOINT = "ListGroups"
 AWSIAM_PARAM_USERNAME = "username"
 AWSIAM_PARAM_PASSWORD = "password"  # pragma: allowlist secret
+AWSIAM_PARAM_CREDENTIALS = "credentials"  # pragma: allowlist secret
 AWSIAM_PARAM_GROUP_NAME = "group_name"
 AWSIAM_PARAM_ROLE_NAME = "role_name"
 AWSIAM_PARAM_ROLE_POLICY_DOC = "role_policy_document"
