@@ -493,6 +493,33 @@ class AwsIamConnector(BaseConnector):
 
                 response_dict.update(response[AWSIAM_JSON_UPDATE_ACCESS_KEY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
+        revoke_policy_document = json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": {
+                    "Effect": "Deny",
+                    "Action": "*",
+                    "Resource": "*",
+                    "Condition": {
+                        "DateLessThan": {"aws:TokenIssueTime": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+                    },
+                },
+            },
+            separators=(",", ":"),
+        )
+        params = OrderedDict()
+        params[AWSIAM_JSON_ACTION] = AWSIAM_PUT_USER_POLICY_ENDPOINT
+        params[AWSIAM_JSON_POLICY_DOCUMENT] = revoke_policy_document
+        params[AWSIAM_JSON_POLICY_NAME] = AWSIAM_REVOKE_SESSIONS_POLICY_NAME
+        params[AWSIAM_JSON_USERNAME] = username
+
+        ret_val, response = self._make_rest_call(action_result=action_result, params=params)
+
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
+
+        response_dict.update(response[AWSIAM_JSON_PUT_USER_POLICY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
+
         action_result.add_data(response_dict)
 
         self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")

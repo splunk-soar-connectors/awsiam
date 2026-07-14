@@ -28,7 +28,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [add user](#action-add-user) - Add user to a group <br>
 [remove user](#action-remove-user) - Remove user from a group <br>
 [delete user](#action-delete-user) - Delete user from AWS IAM account <br>
-[disable user](#action-disable-user) - Disable login profile and access keys of a user <br>
+[disable user](#action-disable-user) - Disable a user's console login, older temporary sessions, and optionally access keys <br>
 [enable user](#action-enable-user) - Enable login profile and access keys of a user <br>
 [add role](#action-add-role) - Add new role in AWS IAM account <br>
 [remove role](#action-remove-role) - Remove role from AWS IAM account <br>
@@ -281,12 +281,12 @@ action_result.parameter.credentials | password | `aws credentials` | {'AccessKey
 
 ## action: 'disable user'
 
-Disable login profile and access keys of a user
+Disable a user's console login, older temporary sessions, and optionally access keys
 
 Type: **contain** <br>
 Read only: **False**
 
-If disable access keys parameter is marked false, only login profile is disabled. By default both are disabled.
+By default the user's console login, older temporary sessions, and access keys are disabled. If disable access keys is false, access keys are unchanged. The action requires iam:PutUserPolicy and does not alter service-specific credentials, SSH keys, or signing certificates.
 
 #### Action Parameters
 
@@ -305,7 +305,7 @@ action_result.parameter.disable_access_keys | boolean | | True False |
 action_result.parameter.username | string | `user name` `aws iam user name` | testUser |
 action_result.data.\*.RequestId | string | | abcd1234-ab12-ab12-ab12-1234abcde |
 action_result.summary | string | | |
-action_result.message | string | | User testUser disabled successfully |
+action_result.message | string | | Console login and older temporary sessions for user testUser disabled successfully. Access keys were updated as requested; service-specific credentials, SSH keys, and signing certificates are unchanged. |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
 action_result.parameter.credentials | password | `aws credentials` | {'AccessKeyId': 'ASIASJL6ZZZZZ3M7QC2J', 'Expiration': '2021-06-07 22:28:04', 'SecretAccessKey': 'ZZZZZAmvLPictcVBPvjJx0d7MRezOuxiLCMZZZZZ', 'SessionToken': 'ZZZZZXIvYXdzEN///////////wEaDFRU0s4AVrw0k0oYICK4ATAzOqzAkg9bHY29lYmP59UvVOHjLufOy4s7SnAzOxGqGIXnukLis4TWNhrJl5R5nYyimrm6K/9d0Cw2SW9gO0ZRjEJHWJ+yY5Qk2QpWctS2BGn4n+G8cD6zEweCCMj+ScI5p8n7YI4wOdvXvOsVMmjV6F09Ujqr1w+NwoKXlglznXGs/7Q1kNZOMiioEhGUyoiHbQb37GCKslDK+oqe0KNaUKQ96YCepaLgMbMquDgdAM8I0TTxUO0o5ILF/gUyLT04R7QlOfktkdh6Qt0atTS+xeKi1hirKRizpJ8jjnxGQIikPRToL2v3ZZZZZZ=='} |

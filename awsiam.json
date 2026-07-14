@@ -1065,8 +1065,8 @@
         {
             "action": "disable user",
             "identifier": "disable_user",
-            "description": "Disable login profile and access keys of a user",
-            "verbose": "If disable access keys parameter is marked false, only login profile is disabled. By default both are disabled.",
+            "description": "Disable a user's console login, older temporary sessions, and optionally access keys",
+            "verbose": "By default the user's console login, older temporary sessions, and access keys are disabled. If disable access keys is false, access keys are unchanged. The action requires iam:PutUserPolicy and does not alter service-specific credentials, SSH keys, or signing certificates.",
             "type": "contain",
             "undo": "enable user",
             "read_only": false,
@@ -1149,7 +1149,7 @@
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "User testUser disabled successfully"
+                        "Console login and older temporary sessions for user testUser disabled successfully. Access keys were updated as requested; service-specific credentials, SSH keys, and signing certificates are unchanged."
                     ]
                 },
                 {
