@@ -1427,14 +1427,23 @@ class AwsIamConnector(BaseConnector):
         """
 
         list_items = []
+        pages_fetched = 0
 
         # 1. Pagination method for getting list of response items
         while True:
+            if pages_fetched >= AWSIAM_MAX_PAGINATION_PAGES:
+                action_result.set_status(
+                    phantom.APP_ERROR,
+                    AWSIAM_PAGINATION_LIMIT_MSG.format(limit=f"{AWSIAM_MAX_PAGINATION_PAGES} pages"),
+                )
+                return None
+
             # Remove 'Version' key because for next pagination call, it gets added again in _make_rest_call
             params.pop(AWSIAM_JSON_VERSION, None)
 
             # make rest call
-            ret_val, response = self._make_rest_call(action_result=action_result, params=params)
+            ret_val, response = self._make_rest_call(action_result=action_result, params=params, timeout=AWSIAM_TIMEOUT)
+            pages_fetched += 1
 
             if phantom.is_fail(ret_val):
                 return None
@@ -1458,12 +1467,22 @@ class AwsIamConnector(BaseConnector):
             if items:
                 if isinstance(items, dict):
                     list_items.append(items)
-                    break
                 elif isinstance(items, list):
                     list_items.extend(items)
 
+            if len(list_items) > AWSIAM_MAX_LIST_ITEMS:
+                action_result.set_status(
+                    phantom.APP_ERROR,
+                    AWSIAM_PAGINATION_LIMIT_MSG.format(limit=f"{AWSIAM_MAX_LIST_ITEMS} items"),
+                )
+                return None
+
             if is_pagination_required:
-                params[AWSIAM_JSON_MARKER] = response[json_resp_part_0][json_resp_part_1][AWSIAM_JSON_MARKER]
+                next_marker = response[json_resp_part_0][json_resp_part_1].get(AWSIAM_JSON_MARKER)
+                if not next_marker or next_marker == params.get(AWSIAM_JSON_MARKER):
+                    action_result.set_status(phantom.APP_ERROR, AWSIAM_INVALID_PAGINATION_MARKER_MSG)
+                    return None
+                params[AWSIAM_JSON_MARKER] = next_marker
             else:
                 break
 
