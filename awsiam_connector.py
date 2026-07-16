@@ -67,9 +67,9 @@ class AwsIamConnector(BaseConnector):
 
     def _get_temp_credentials(self, action_result, param=None):
         temp_credentials = dict()
-        if param and "credentials" in param:
+        if param and AWSIAM_PARAM_CREDENTIALS in param:
             try:
-                temp_credentials = ast.literal_eval(param["credentials"])
+                temp_credentials = ast.literal_eval(param[AWSIAM_PARAM_CREDENTIALS])
                 self._access_key = temp_credentials.get("AccessKeyId", "")
                 self._secret_key = temp_credentials.get("SecretAccessKey", "")
                 self._session_token = temp_credentials.get("SessionToken", "")
@@ -82,6 +82,11 @@ class AwsIamConnector(BaseConnector):
                 return action_result.set_status(phantom.APP_ERROR, err_msg)
 
         return phantom.APP_SUCCESS
+
+    @staticmethod
+    def _sanitize_action_parameters(param):
+        sensitive_keys = {AWSIAM_PARAM_CREDENTIALS, AWSIAM_PARAM_PASSWORD}
+        return {key: value for key, value in param.items() if key not in sensitive_keys}
 
     def __save_action_handler_progress(self):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
@@ -388,8 +393,14 @@ class AwsIamConnector(BaseConnector):
                 headers=self._get_headers(current_time=datetime.datetime.utcnow(), params=urlencode(params)),
             )
         except Exception as e:
+            error_message = self._get_error_message_from_exception(e)
+            password = params.get(AWSIAM_JSON_PASSWORD)
+            if password:
+                encoded_password = urlencode({AWSIAM_JSON_PASSWORD: password}).partition("=")[2]
+                for sensitive_value in (str(password), encoded_password):
+                    error_message = error_message.replace(sensitive_value, "********")
             return RetVal(
-                action_result.set_status(phantom.APP_ERROR, f"Error Connecting to server. Details: {self._get_error_message_from_exception(e)}"),
+                action_result.set_status(phantom.APP_ERROR, f"Error Connecting to server. Details: {error_message}"),
                 resp_json,
             )
 
@@ -402,7 +413,7 @@ class AwsIamConnector(BaseConnector):
         :return: Status(phantom.APP_SUCCESS/phantom.APP_ERROR)
         """
 
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
         self.save_progress(AWSIAM_CONNECTING_ENDPOINT_MSG)
 
         params = dict()
@@ -416,7 +427,7 @@ class AwsIamConnector(BaseConnector):
             params[AWSIAM_JSON_ACTION] = AWSIAM_TEST_CONNECTIVITY_ENDPOINT
 
         # make rest call
-        ret_val, response = self._make_rest_call(action_result=action_result, params=params, timeout=AWSIAM_TIMEOUT)
+        ret_val, _response = self._make_rest_call(action_result=action_result, params=params, timeout=AWSIAM_TIMEOUT)
 
         if phantom.is_fail(ret_val):
             self.save_progress(AWSIAM_TEST_CONNECTIVITY_FAILED_MSG)
@@ -433,7 +444,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -493,6 +504,33 @@ class AwsIamConnector(BaseConnector):
 
                 response_dict.update(response[AWSIAM_JSON_UPDATE_ACCESS_KEY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
 
+        revoke_policy_document = json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": {
+                    "Effect": "Deny",
+                    "Action": "*",
+                    "Resource": "*",
+                    "Condition": {
+                        "DateLessThan": {"aws:TokenIssueTime": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+                    },
+                },
+            },
+            separators=(",", ":"),
+        )
+        params = OrderedDict()
+        params[AWSIAM_JSON_ACTION] = AWSIAM_PUT_USER_POLICY_ENDPOINT
+        params[AWSIAM_JSON_POLICY_DOCUMENT] = revoke_policy_document
+        params[AWSIAM_JSON_POLICY_NAME] = AWSIAM_REVOKE_SESSIONS_POLICY_NAME
+        params[AWSIAM_JSON_USERNAME] = username
+
+        ret_val, response = self._make_rest_call(action_result=action_result, params=params)
+
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
+
+        response_dict.update(response[AWSIAM_JSON_PUT_USER_POLICY_RESPONSE][AWSIAM_JSON_RESPONSE_METADATA])
+
         action_result.add_data(response_dict)
 
         self.save_progress(f"Action handler for: {self.get_action_identifier()} has been successfully executed.")
@@ -506,7 +544,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -583,7 +621,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -617,7 +655,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -651,7 +689,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -696,7 +734,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -741,7 +779,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -851,7 +889,7 @@ class AwsIamConnector(BaseConnector):
         params[AWSIAM_JSON_ROLE_NAME] = role_name
 
         # make rest call
-        ret_val, response = self._make_rest_call(action_result=action_result, params=params)
+        ret_val, _response = self._make_rest_call(action_result=action_result, params=params)
 
         if phantom.is_fail(ret_val):
             # a) If role does not exist, then,
@@ -877,7 +915,7 @@ class AwsIamConnector(BaseConnector):
         params[AWSIAM_JSON_INSTANCE_PROFILE_NAME] = role_name
 
         # make rest call
-        ret_val, response = self._make_rest_call(action_result=action_result, params=params)
+        ret_val, _response = self._make_rest_call(action_result=action_result, params=params)
 
         if phantom.is_fail(ret_val):
             # a) If instance profile does not exist, then,
@@ -901,7 +939,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -995,7 +1033,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -1120,7 +1158,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -1155,7 +1193,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -1189,7 +1227,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -1255,7 +1293,7 @@ class AwsIamConnector(BaseConnector):
         group_path = param.get(AWSIAM_PARAM_GROUP_PATH, "/")
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -1292,7 +1330,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -1351,7 +1389,7 @@ class AwsIamConnector(BaseConnector):
         """
 
         self.__save_action_handler_progress()
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._sanitize_action_parameters(param)))
 
         # Check to see if temporary credentials have been passed as a parameter to the action
         if not self._get_temp_credentials(action_result, param):
@@ -1389,14 +1427,23 @@ class AwsIamConnector(BaseConnector):
         """
 
         list_items = []
+        pages_fetched = 0
 
         # 1. Pagination method for getting list of response items
         while True:
+            if pages_fetched >= AWSIAM_MAX_PAGINATION_PAGES:
+                action_result.set_status(
+                    phantom.APP_ERROR,
+                    AWSIAM_PAGINATION_LIMIT_MSG.format(limit=f"{AWSIAM_MAX_PAGINATION_PAGES} pages"),
+                )
+                return None
+
             # Remove 'Version' key because for next pagination call, it gets added again in _make_rest_call
             params.pop(AWSIAM_JSON_VERSION, None)
 
             # make rest call
-            ret_val, response = self._make_rest_call(action_result=action_result, params=params)
+            ret_val, response = self._make_rest_call(action_result=action_result, params=params, timeout=AWSIAM_TIMEOUT)
+            pages_fetched += 1
 
             if phantom.is_fail(ret_val):
                 return None
@@ -1420,12 +1467,22 @@ class AwsIamConnector(BaseConnector):
             if items:
                 if isinstance(items, dict):
                     list_items.append(items)
-                    break
                 elif isinstance(items, list):
                     list_items.extend(items)
 
+            if len(list_items) > AWSIAM_MAX_LIST_ITEMS:
+                action_result.set_status(
+                    phantom.APP_ERROR,
+                    AWSIAM_PAGINATION_LIMIT_MSG.format(limit=f"{AWSIAM_MAX_LIST_ITEMS} items"),
+                )
+                return None
+
             if is_pagination_required:
-                params[AWSIAM_JSON_MARKER] = response[json_resp_part_0][json_resp_part_1][AWSIAM_JSON_MARKER]
+                next_marker = response[json_resp_part_0][json_resp_part_1].get(AWSIAM_JSON_MARKER)
+                if not next_marker or next_marker == params.get(AWSIAM_JSON_MARKER):
+                    action_result.set_status(phantom.APP_ERROR, AWSIAM_INVALID_PAGINATION_MARKER_MSG)
+                    return None
+                params[AWSIAM_JSON_MARKER] = next_marker
             else:
                 break
 
