@@ -281,6 +281,41 @@ class AwsIamConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
+    @staticmethod
+    def _read_limited_response(response, action_result):
+        content_length = response.headers.get("Content-Length")
+        if content_length:
+            try:
+                if int(content_length) > AWSIAM_MAX_RESPONSE_BYTES:
+                    response.close()
+                    return action_result.set_status(
+                        phantom.APP_ERROR,
+                        AWSIAM_RESPONSE_LIMIT_MSG.format(limit=AWSIAM_MAX_RESPONSE_BYTES),
+                    )
+            except ValueError:
+                pass
+
+        chunks = []
+        total_bytes = 0
+        try:
+            for chunk in response.iter_content(chunk_size=64 * 1024):
+                if not chunk:
+                    continue
+                total_bytes += len(chunk)
+                if total_bytes > AWSIAM_MAX_RESPONSE_BYTES:
+                    response.close()
+                    return action_result.set_status(
+                        phantom.APP_ERROR,
+                        AWSIAM_RESPONSE_LIMIT_MSG.format(limit=AWSIAM_MAX_RESPONSE_BYTES),
+                    )
+                chunks.append(chunk)
+        except Exception as e:
+            return action_result.set_status(phantom.APP_ERROR, f"Unable to read AWS IAM response: {e}")
+
+        response._content = b"".join(chunks)
+        response._content_consumed = True
+        return phantom.APP_SUCCESS
+
     def _aws_sign(self, key, data):
         """This function is used to generate cryptographic hash of the provided data.
 
@@ -389,6 +424,7 @@ class AwsIamConnector(BaseConnector):
                 AWSIAM_SERVER_URL,
                 data=data,
                 params=params,
+                stream=True,
                 timeout=timeout,
                 headers=self._get_headers(current_time=datetime.datetime.utcnow(), params=urlencode(params)),
             )
@@ -403,6 +439,9 @@ class AwsIamConnector(BaseConnector):
                 action_result.set_status(phantom.APP_ERROR, f"Error Connecting to server. Details: {error_message}"),
                 resp_json,
             )
+
+        if phantom.is_fail(self._read_limited_response(request_response, action_result)):
+            return RetVal(action_result.get_status(), resp_json)
 
         return self._process_response(request_response, action_result)
 
@@ -1466,16 +1505,29 @@ class AwsIamConnector(BaseConnector):
 
             if items:
                 if isinstance(items, dict):
+                    page_item_count = 1
+                elif isinstance(items, list):
+                    page_item_count = len(items)
+                else:
+                    page_item_count = 0
+
+                if page_item_count > AWSIAM_MAX_ITEMS_PER_PAGE:
+                    action_result.set_status(
+                        phantom.APP_ERROR,
+                        AWSIAM_PAGINATION_LIMIT_MSG.format(limit=f"{AWSIAM_MAX_ITEMS_PER_PAGE} items per page"),
+                    )
+                    return None
+                if len(list_items) + page_item_count > AWSIAM_MAX_LIST_ITEMS:
+                    action_result.set_status(
+                        phantom.APP_ERROR,
+                        AWSIAM_PAGINATION_LIMIT_MSG.format(limit=f"{AWSIAM_MAX_LIST_ITEMS} items"),
+                    )
+                    return None
+
+                if isinstance(items, dict):
                     list_items.append(items)
                 elif isinstance(items, list):
                     list_items.extend(items)
-
-            if len(list_items) > AWSIAM_MAX_LIST_ITEMS:
-                action_result.set_status(
-                    phantom.APP_ERROR,
-                    AWSIAM_PAGINATION_LIMIT_MSG.format(limit=f"{AWSIAM_MAX_LIST_ITEMS} items"),
-                )
-                return None
 
             if is_pagination_required:
                 next_marker = response[json_resp_part_0][json_resp_part_1].get(AWSIAM_JSON_MARKER)
