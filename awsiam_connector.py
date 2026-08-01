@@ -14,11 +14,15 @@
 # and limitations under the License.
 import ast
 import collections
+import contextlib
 import datetime
 import hashlib
 import hmac
 import json
+import signal
 import sys
+import threading
+import time
 from collections import OrderedDict
 
 import requests
@@ -43,6 +47,10 @@ from phantom.base_connector import BaseConnector
 class RetVal(tuple):
     def __new__(cls, val1, val2=None):
         return tuple.__new__(RetVal, (val1, val2))
+
+
+class AwsIamRequestDeadlineExceeded(TimeoutError):
+    pass
 
 
 class AwsIamConnector(BaseConnector):
@@ -282,7 +290,31 @@ class AwsIamConnector(BaseConnector):
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     @staticmethod
-    def _read_limited_response(response, action_result):
+    @contextlib.contextmanager
+    def _request_deadline(timeout):
+        if threading.current_thread() is not threading.main_thread() or not hasattr(signal, "setitimer"):
+            raise AwsIamRequestDeadlineExceeded(AWSIAM_RESPONSE_DEADLINE_UNAVAILABLE_MSG)
+
+        previous_timer = signal.getitimer(signal.ITIMER_REAL)
+        if previous_timer[0] > 0:
+            raise AwsIamRequestDeadlineExceeded(AWSIAM_RESPONSE_DEADLINE_UNAVAILABLE_MSG)
+
+        previous_handler = signal.getsignal(signal.SIGALRM)
+        started_at = time.monotonic()
+
+        def _raise_timeout(_signum, _frame):
+            raise AwsIamRequestDeadlineExceeded(AWSIAM_RESPONSE_TIMEOUT_MSG.format(timeout=timeout))
+
+        signal.signal(signal.SIGALRM, _raise_timeout)
+        signal.setitimer(signal.ITIMER_REAL, timeout)
+        try:
+            yield started_at + timeout
+        finally:
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            signal.signal(signal.SIGALRM, previous_handler)
+
+    @staticmethod
+    def _read_limited_response(response, action_result, deadline):
         content_length = response.headers.get("Content-Length")
         if content_length:
             try:
@@ -299,6 +331,8 @@ class AwsIamConnector(BaseConnector):
         total_bytes = 0
         try:
             for chunk in response.iter_content(chunk_size=64 * 1024):
+                if time.monotonic() >= deadline:
+                    raise AwsIamRequestDeadlineExceeded(AWSIAM_RESPONSE_TIMEOUT_MSG.format(timeout=AWSIAM_TIMEOUT))
                 if not chunk:
                     continue
                 total_bytes += len(chunk)
@@ -309,7 +343,10 @@ class AwsIamConnector(BaseConnector):
                         AWSIAM_RESPONSE_LIMIT_MSG.format(limit=AWSIAM_MAX_RESPONSE_BYTES),
                     )
                 chunks.append(chunk)
+        except AwsIamRequestDeadlineExceeded:
+            raise
         except Exception as e:
+            response.close()
             return action_result.set_status(phantom.APP_ERROR, f"Unable to read AWS IAM response: {e}")
 
         response._content = b"".join(chunks)
@@ -406,6 +443,8 @@ class AwsIamConnector(BaseConnector):
         """
 
         resp_json = None
+        request_response = None
+        timeout = AWSIAM_TIMEOUT if timeout is None else float(timeout)
 
         if params is None:
             params = OrderedDict()
@@ -420,14 +459,22 @@ class AwsIamConnector(BaseConnector):
             return RetVal(action_result.set_status(phantom.APP_ERROR, f"Invalid method: {method}"), resp_json)
 
         try:
-            request_response = request_func(
-                AWSIAM_SERVER_URL,
-                data=data,
-                params=params,
-                stream=True,
-                timeout=timeout,
-                headers=self._get_headers(current_time=datetime.datetime.utcnow(), params=urlencode(params)),
-            )
+            with self._request_deadline(timeout) as deadline:
+                request_response = request_func(
+                    AWSIAM_SERVER_URL,
+                    data=data,
+                    params=params,
+                    stream=True,
+                    timeout=timeout,
+                    headers=self._get_headers(current_time=datetime.datetime.utcnow(), params=urlencode(params)),
+                )
+
+                if phantom.is_fail(self._read_limited_response(request_response, action_result, deadline)):
+                    return RetVal(action_result.get_status(), resp_json)
+        except AwsIamRequestDeadlineExceeded as e:
+            if request_response is not None:
+                request_response.close()
+            return RetVal(action_result.set_status(phantom.APP_ERROR, str(e)), resp_json)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             password = params.get(AWSIAM_JSON_PASSWORD)
@@ -439,9 +486,6 @@ class AwsIamConnector(BaseConnector):
                 action_result.set_status(phantom.APP_ERROR, f"Error Connecting to server. Details: {error_message}"),
                 resp_json,
             )
-
-        if phantom.is_fail(self._read_limited_response(request_response, action_result)):
-            return RetVal(action_result.get_status(), resp_json)
 
         return self._process_response(request_response, action_result)
 
