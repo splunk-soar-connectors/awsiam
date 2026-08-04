@@ -14,11 +14,15 @@
 # and limitations under the License.
 import ast
 import collections
+import contextlib
 import datetime
 import hashlib
 import hmac
 import json
+import signal
 import sys
+import threading
+import time
 from collections import OrderedDict
 
 import requests
@@ -45,6 +49,10 @@ class RetVal(tuple):
         return tuple.__new__(RetVal, (val1, val2))
 
 
+class AwsIamRequestDeadlineExceeded(TimeoutError):
+    pass
+
+
 class AwsIamConnector(BaseConnector):
     def __init__(self):
         # Call the BaseConnectors init first
@@ -56,6 +64,7 @@ class AwsIamConnector(BaseConnector):
         self._session_token = None
         self._response_metadata_dict = None
         self._python_version = None
+        self._last_response_size = 0
 
     def _handle_get_ec2_role(self):
         """
@@ -281,6 +290,72 @@ class AwsIamConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
+    @staticmethod
+    @contextlib.contextmanager
+    def _request_deadline(deadline, timeout):
+        if threading.current_thread() is not threading.main_thread() or not hasattr(signal, "setitimer"):
+            raise AwsIamRequestDeadlineExceeded(AWSIAM_RESPONSE_DEADLINE_UNAVAILABLE_MSG)
+
+        previous_timer = signal.getitimer(signal.ITIMER_REAL)
+        if previous_timer[0] > 0:
+            raise AwsIamRequestDeadlineExceeded(AWSIAM_RESPONSE_DEADLINE_UNAVAILABLE_MSG)
+
+        previous_handler = signal.getsignal(signal.SIGALRM)
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise AwsIamRequestDeadlineExceeded(AWSIAM_RESPONSE_TIMEOUT_MSG.format(timeout=timeout))
+
+        def _raise_timeout(_signum, _frame):
+            raise AwsIamRequestDeadlineExceeded(AWSIAM_RESPONSE_TIMEOUT_MSG.format(timeout=timeout))
+
+        signal.signal(signal.SIGALRM, _raise_timeout)
+        signal.setitimer(signal.ITIMER_REAL, remaining)
+        try:
+            yield deadline
+        finally:
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            signal.signal(signal.SIGALRM, previous_handler)
+
+    def _read_limited_response(self, response, action_result, deadline, max_response_bytes):
+        content_length = response.headers.get("Content-Length")
+        if content_length:
+            try:
+                if int(content_length) > max_response_bytes:
+                    response.close()
+                    return action_result.set_status(
+                        phantom.APP_ERROR,
+                        AWSIAM_RESPONSE_LIMIT_MSG.format(limit=max_response_bytes),
+                    )
+            except ValueError:
+                pass
+
+        chunks = []
+        total_bytes = 0
+        try:
+            for chunk in response.iter_content(chunk_size=64 * 1024):
+                if time.monotonic() >= deadline:
+                    raise AwsIamRequestDeadlineExceeded(AWSIAM_RESPONSE_TIMEOUT_MSG.format(timeout=AWSIAM_TIMEOUT))
+                if not chunk:
+                    continue
+                total_bytes += len(chunk)
+                if total_bytes > max_response_bytes:
+                    response.close()
+                    return action_result.set_status(
+                        phantom.APP_ERROR,
+                        AWSIAM_RESPONSE_LIMIT_MSG.format(limit=max_response_bytes),
+                    )
+                chunks.append(chunk)
+        except AwsIamRequestDeadlineExceeded:
+            raise
+        except Exception as e:
+            response.close()
+            return action_result.set_status(phantom.APP_ERROR, f"Unable to read AWS IAM response: {e}")
+
+        response._content = b"".join(chunks)
+        response._content_consumed = True
+        self._last_response_size = total_bytes
+        return phantom.APP_SUCCESS
+
     def _aws_sign(self, key, data):
         """This function is used to generate cryptographic hash of the provided data.
 
@@ -358,7 +433,7 @@ class AwsIamConnector(BaseConnector):
             headers[AWSIAM_JSON_STS_TOKEN] = self._session_token
         return headers
 
-    def _make_rest_call(self, action_result, params=None, data=None, method="get", timeout=None):
+    def _make_rest_call(self, action_result, params=None, data=None, method="get", timeout=None, deadline=None, max_response_bytes=None):
         """This function is used to make the REST call.
 
         :param action_result: Object of ActionResult class
@@ -371,6 +446,9 @@ class AwsIamConnector(BaseConnector):
         """
 
         resp_json = None
+        request_response = None
+        timeout = AWSIAM_TIMEOUT if timeout is None else float(timeout)
+        max_response_bytes = AWSIAM_MAX_RESPONSE_BYTES if max_response_bytes is None else max_response_bytes
 
         if params is None:
             params = OrderedDict()
@@ -385,13 +463,28 @@ class AwsIamConnector(BaseConnector):
             return RetVal(action_result.set_status(phantom.APP_ERROR, f"Invalid method: {method}"), resp_json)
 
         try:
-            request_response = request_func(
-                AWSIAM_SERVER_URL,
-                data=data,
-                params=params,
-                timeout=timeout,
-                headers=self._get_headers(current_time=datetime.datetime.utcnow(), params=urlencode(params)),
-            )
+            now = time.monotonic()
+            request_deadline = min(deadline, now + timeout) if deadline is not None else now + timeout
+            request_timeout = min(timeout, request_deadline - now)
+            self._last_response_size = 0
+            with self._request_deadline(request_deadline, timeout) as enforced_deadline:
+                request_response = request_func(
+                    AWSIAM_SERVER_URL,
+                    data=data,
+                    params=params,
+                    stream=True,
+                    timeout=request_timeout,
+                    headers=self._get_headers(current_time=datetime.datetime.utcnow(), params=urlencode(params)),
+                )
+
+                if phantom.is_fail(self._read_limited_response(request_response, action_result, enforced_deadline, max_response_bytes)):
+                    return RetVal(action_result.get_status(), resp_json)
+
+                return self._process_response(request_response, action_result)
+        except AwsIamRequestDeadlineExceeded as e:
+            if request_response is not None:
+                request_response.close()
+            return RetVal(action_result.set_status(phantom.APP_ERROR, str(e)), resp_json)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             password = params.get(AWSIAM_JSON_PASSWORD)
@@ -403,8 +496,6 @@ class AwsIamConnector(BaseConnector):
                 action_result.set_status(phantom.APP_ERROR, f"Error Connecting to server. Details: {error_message}"),
                 resp_json,
             )
-
-        return self._process_response(request_response, action_result)
 
     def _handle_test_connectivity(self, param):
         """This function is used to handle the test connectivity action.
@@ -1428,6 +1519,8 @@ class AwsIamConnector(BaseConnector):
 
         list_items = []
         pages_fetched = 0
+        response_bytes = 0
+        deadline = time.monotonic() + AWSIAM_PAGINATION_TIMEOUT
 
         # 1. Pagination method for getting list of response items
         while True:
@@ -1442,11 +1535,25 @@ class AwsIamConnector(BaseConnector):
             params.pop(AWSIAM_JSON_VERSION, None)
 
             # make rest call
-            ret_val, response = self._make_rest_call(action_result=action_result, params=params, timeout=AWSIAM_TIMEOUT)
+            remaining_response_bytes = AWSIAM_MAX_PAGINATION_RESPONSE_BYTES - response_bytes
+            if remaining_response_bytes <= 0:
+                action_result.set_status(
+                    phantom.APP_ERROR,
+                    AWSIAM_RESPONSE_LIMIT_MSG.format(limit=AWSIAM_MAX_PAGINATION_RESPONSE_BYTES),
+                )
+                return None
+            ret_val, response = self._make_rest_call(
+                action_result=action_result,
+                params=params,
+                timeout=AWSIAM_TIMEOUT,
+                deadline=deadline,
+                max_response_bytes=remaining_response_bytes,
+            )
             pages_fetched += 1
 
             if phantom.is_fail(ret_val):
                 return None
+            response_bytes += self._last_response_size
 
             json_resp_part_0 = (self._response_metadata_dict[key])[0]
             json_resp_part_1 = (self._response_metadata_dict[key])[1]
@@ -1466,16 +1573,29 @@ class AwsIamConnector(BaseConnector):
 
             if items:
                 if isinstance(items, dict):
+                    page_item_count = 1
+                elif isinstance(items, list):
+                    page_item_count = len(items)
+                else:
+                    page_item_count = 0
+
+                if page_item_count > AWSIAM_MAX_ITEMS_PER_PAGE:
+                    action_result.set_status(
+                        phantom.APP_ERROR,
+                        AWSIAM_PAGINATION_LIMIT_MSG.format(limit=f"{AWSIAM_MAX_ITEMS_PER_PAGE} items per page"),
+                    )
+                    return None
+                if len(list_items) + page_item_count > AWSIAM_MAX_LIST_ITEMS:
+                    action_result.set_status(
+                        phantom.APP_ERROR,
+                        AWSIAM_PAGINATION_LIMIT_MSG.format(limit=f"{AWSIAM_MAX_LIST_ITEMS} items"),
+                    )
+                    return None
+
+                if isinstance(items, dict):
                     list_items.append(items)
                 elif isinstance(items, list):
                     list_items.extend(items)
-
-            if len(list_items) > AWSIAM_MAX_LIST_ITEMS:
-                action_result.set_status(
-                    phantom.APP_ERROR,
-                    AWSIAM_PAGINATION_LIMIT_MSG.format(limit=f"{AWSIAM_MAX_LIST_ITEMS} items"),
-                )
-                return None
 
             if is_pagination_required:
                 next_marker = response[json_resp_part_0][json_resp_part_1].get(AWSIAM_JSON_MARKER)
